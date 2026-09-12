@@ -1551,7 +1551,6 @@
     height: calc(100vh - var(--sd-nav-h, 0px));
     display: flex;
     align-items: center;
-    justify-content: center;
     overflow: hidden;
     background: var(--ink-950);
     border-top: 1px solid rgba(255,255,255,0.06);
@@ -1560,14 +1559,15 @@
   .smart-decision-site .sd-exploded-inner {
     position: relative;
     z-index: 2;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 40px;
+    align-items: center;
     width: 100%;
   }
   .smart-decision-site .sd-exploded-visual {
     position: relative;
-    width: 100%;
-    max-width: 1140px;
-    aspect-ratio: 16 / 9;
-    margin: 0 auto;
+    aspect-ratio: 5 / 4;
   }
   .smart-decision-site .sd-exploded-visual canvas {
     width: 100%;
@@ -1593,14 +1593,104 @@
   }
   .smart-decision-site .sd-exploded-visual-fallback[hidden] { display: none; }
 
+  .smart-decision-site .sd-exploded-panel {
+    display: flex;
+    gap: 22px;
+    align-items: flex-start;
+  }
+  .smart-decision-site .sd-exploded-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+  .smart-decision-site .sd-exploded-step {
+    width: 30px; height: 30px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: var(--steel-300);
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    clip-path: polygon(var(--cut-sm) 0, 100% 0, 100% calc(100% - var(--cut-sm)), calc(100% - var(--cut-sm)) 100%, 0 100%, 0 var(--cut-sm));
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  }
+  .smart-decision-site .sd-exploded-step:hover { border-color: rgba(255,255,255,0.4); }
+  .smart-decision-site .sd-exploded-step:focus-visible { outline: 3px solid var(--red-300); outline-offset: 2px; }
+  .smart-decision-site .sd-exploded-step.is-active {
+    background: var(--red-600);
+    border-color: var(--red-600);
+    color: var(--white);
+  }
+  .smart-decision-site .sd-exploded-copy-stack {
+    position: relative;
+    min-height: 232px;
+    flex-grow: 1;
+  }
+  .smart-decision-site .sd-exploded-copy {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+  }
+  .smart-decision-site .sd-exploded-copy.is-active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .smart-decision-site .sd-exploded-copy-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red-400);
+    margin-bottom: 12px;
+  }
+  .smart-decision-site .sd-exploded-copy-tag::before {
+    content: "";
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--red-500);
+  }
+  .smart-decision-site .sd-exploded-copy h3 {
+    color: var(--white);
+    font-size: clamp(24px, 2.6vw, 32px);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .smart-decision-site .sd-exploded-copy p {
+    color: var(--steel-300);
+    font-size: 15.5px;
+    max-width: 420px;
+    margin-bottom: 18px;
+  }
+
   @media (max-width: 1024px) {
-    .smart-decision-site .sd-exploded-track { height: 380vh; }
-    .smart-decision-site .sd-exploded-stage { padding: 24px 0; }
+    .smart-decision-site .sd-exploded-track { height: 480vh; }
+    .smart-decision-site .sd-exploded-inner { grid-template-columns: 1fr; grid-template-rows: auto auto; gap: 20px; }
+    .smart-decision-site .sd-exploded-stage { padding: 24px 0; align-items: stretch; }
+    .smart-decision-site .sd-exploded-copy-stack { min-height: 190px; }
   }
 
   @media (max-width: 640px) {
-    .smart-decision-site .sd-exploded-track { height: 320vh; }
-    .smart-decision-site .sd-exploded-visual { aspect-ratio: 3 / 4; }
+    .smart-decision-site .sd-exploded-track { height: 420vh; }
+    .smart-decision-site .sd-exploded-panel { flex-direction: column; align-items: stretch; gap: 14px; }
+    .smart-decision-site .sd-exploded-steps { flex-direction: row; }
+    .smart-decision-site .sd-exploded-copy p { font-size: 14.5px; }
+    .smart-decision-site .sd-exploded-copy-stack { min-height: 210px; }
   }
 
   /* Static, non-scroll-jacked fallback for prefers-reduced-motion */
@@ -1611,7 +1701,23 @@
     display: block;
     padding: 40px 0;
   }
-  .smart-decision-site .sd-exploded.sd-reduced-motion .sd-exploded-visual { max-width: 720px; margin: 0 auto; }
+  .smart-decision-site .sd-exploded.sd-reduced-motion .sd-exploded-inner {
+    display: block;
+  }
+  .smart-decision-site .sd-exploded.sd-reduced-motion .sd-exploded-visual { max-width: 640px; margin: 0 auto 40px auto; }
+  .smart-decision-site .sd-exploded.sd-reduced-motion .sd-exploded-panel { display: block; }
+  .smart-decision-site .sd-exploded.sd-reduced-motion .sd-exploded-steps { display: none; }
+  .smart-decision-site .sd-exploded.sd-reduced-motion .sd-exploded-copy-stack { min-height: 0; }
+  .smart-decision-site .sd-exploded.sd-reduced-motion .sd-exploded-copy {
+    position: static;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .smart-decision-site .sd-exploded.sd-reduced-motion .sd-exploded-copy:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
   .smart-decision-site .sd-exploded.sd-reduced-motion .sd-exploded-hint { display: none; }
 </style>
 </head>
@@ -1895,13 +2001,13 @@
       </div>
     </section>
 
-    <!-- ============ INTERACTIVE TRUCK SHOWCASE (new add-on section) ============ -->
-    <section class="sd-section sd-section-dark sd-exploded" id="sd-systems" aria-label="3D commercial truck showcase">
+    <!-- ============ INTERACTIVE TRUCK SYSTEMS (new add-on section) ============ -->
+    <section class="sd-section sd-section-dark sd-exploded" id="sd-systems" aria-label="Interactive truck systems overview">
       <div class="sd-container">
         <div class="sd-section-head">
           <span class="sd-eyebrow">Under The Hood</span>
-          <h2>Built For The Job. Ready For The Road.</h2>
-          <p>Scroll to take a cinematic look around a real commercial truck — the kind of vehicle our technicians service every day.</p>
+          <h2>Complete Vehicle Care. From Diagnostics To Repair.</h2>
+          <p>Scroll to see the major systems our technicians service every day. The camera moves in close on each one as you scroll — and back out again if you scroll back up.</p>
         </div>
         <div class="sd-exploded-hint" id="sdExplodedHint">
           <span>Keep scrolling</span>
@@ -1913,12 +2019,59 @@
         <div class="sd-exploded-stage">
           <div class="sd-halftone" aria-hidden="true"></div>
           <div class="sd-container sd-exploded-inner">
+
             <div class="sd-exploded-visual">
-              <canvas id="sdTruckCanvas" role="img" aria-label="3D showcase of a complete commercial truck"></canvas>
+              <canvas id="sdTruckCanvas" role="img" aria-label="3D showcase of a commercial truck, camera moving between brakes, electrical, engine, and drivetrain"></canvas>
               <div class="sd-exploded-visual-fallback" id="sdTruckFallback" hidden>
-                <p>3D preview isn't supported in this browser, but our technicians are ready to help with your fleet.</p>
+                <p>3D preview isn't supported in this browser, but our technicians still service every system below.</p>
               </div>
             </div>
+
+            <div class="sd-exploded-panel">
+              <div class="sd-exploded-steps" id="sdExplodedSteps" role="tablist" aria-label="Truck system stages">
+                <button type="button" class="sd-exploded-step" data-step="0" aria-label="Overview">•</button>
+                <button type="button" class="sd-exploded-step" data-step="1" aria-label="Brakes">1</button>
+                <button type="button" class="sd-exploded-step" data-step="2" aria-label="Electrical">2</button>
+                <button type="button" class="sd-exploded-step" data-step="3" aria-label="Engine">3</button>
+                <button type="button" class="sd-exploded-step" data-step="4" aria-label="Transmission and drivetrain">4</button>
+                <button type="button" class="sd-exploded-step" data-step="5" aria-label="Preventive maintenance">5</button>
+              </div>
+
+              <div class="sd-exploded-copy-stack">
+                <article class="sd-exploded-copy" data-copy="0">
+                  <span class="sd-exploded-copy-tag">Fully Assembled</span>
+                  <h3>Every System, One Truck</h3>
+                  <p>Keep scrolling to watch the major systems our techs work on separate from the frame, one at a time.</p>
+                </article>
+                <article class="sd-exploded-copy" data-copy="1">
+                  <span class="sd-exploded-copy-tag">System 01 — Brakes</span>
+                  <h3>Brakes</h3>
+                  <p>Full inspection, pad and rotor replacement, and air/hydraulic brake system repair to keep every stop reliable.</p>
+                </article>
+                <article class="sd-exploded-copy" data-copy="2">
+                  <span class="sd-exploded-copy-tag">System 02 — Electrical</span>
+                  <h3>Electrical</h3>
+                  <p>Diagnostics for wiring, batteries, alternators, and lighting — the systems that keep your truck running and compliant.</p>
+                </article>
+                <article class="sd-exploded-copy" data-copy="3">
+                  <span class="sd-exploded-copy-tag">System 03 — Engine</span>
+                  <h3>Engine</h3>
+                  <p>Diesel engine diagnostics, repair, and scheduled maintenance to maximize uptime and protect your investment.</p>
+                </article>
+                <article class="sd-exploded-copy" data-copy="4">
+                  <span class="sd-exploded-copy-tag">System 04 — Transmission &amp; Drivetrain</span>
+                  <h3>Transmission &amp; Drivetrain</h3>
+                  <p>Transmission, clutch, and drivetrain inspection and repair for smooth power delivery under heavy loads.</p>
+                </article>
+                <article class="sd-exploded-copy" data-copy="5">
+                  <span class="sd-exploded-copy-tag">System 05 — Preventive Maintenance</span>
+                  <h3>Preventive Maintenance</h3>
+                  <p>Scheduled service programs that catch small issues before they become costly breakdowns on the road.</p>
+                  <a href="#sd-request" class="sd-btn sd-btn-primary sd-btn-sm">Request Service</a>
+                </article>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -7108,65 +7261,41 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
   })();
 
   /* ==========================================================================
-     3D TRUCK SHOWCASE — scroll-driven cinematic camera (Three.js).
+     3D TRUCK SHOWCASE — scroll-driven camera zoom (Three.js).
      The truck (procedural below, or the real GLB model further down) stays
-     one complete, fully assembled vehicle at all times. Nothing separates,
-     highlights, or disappears -- scrolling only moves the camera smoothly
-     around it, like a product-photography dolly move. Three.js itself is
-     inlined above (MIT license) rather than CDN-loaded, keeping this a
-     single self-contained file like the rest of the page's embedded assets.
-     ========================================================================== */
+     one complete, fully assembled vehicle at all times -- nothing separates
+     or disappears. Instead, as the visitor scrolls through each numbered
+     system stage, the camera itself moves in for a closer look at roughly
+     where that system lives on the truck (wheels/brakes at the corners,
+     hood/engine at the front, mid-frame for the drivetrain, etc.), then
+     pulls back out to a wide hero shot for the final stage. Three.js itself
+     is inlined above (MIT license) rather than CDN-loaded, keeping this a
+     single self-contained file like the rest of the page's embedded assets. */
 
-  /* Six camera keyframes describing one continuous cinematic pass around the
-     truck: a wide three-quarter establishing shot, a slow push in, a move
-     toward the front, a close look at the grille/headlights/cab/hood/wheels,
-     a subtle swing to the opposite three-quarter angle, and a final wider
-     hero shot. Positions/targets are expressed as fractions of the truck's
-     own bounding-box size along its forward/right/up axes (not hardcoded
-     world coordinates), so the same keyframe list works for both the
-     procedural truck and the real GLB model even though they use different
-     world-axis conventions for "forward". A Catmull-Rom spline threads
-     smoothly through all six points, and easing keeps the motion slow and
-     controlled rather than linear. */
-  function buildTruckCameraPath(T, center, maxDim, forward, up) {
+  /* Builds a camera rig for a sequence of named stages. `stops` are scroll
+     progress values (0-1) at which the camera should be AT the matching
+     keyframe; positionFractions/targetFractions are arrays of [forward,
+     right, up] fractions of the truck's own bounding-box size (not hardcoded
+     world coordinates), so the same fractions work for both the procedural
+     truck and the real GLB model even though they use different world-axis
+     conventions for "forward". Plain per-segment linear interpolation with
+     eased blending is used rather than a spline: a Catmull-Rom curve through
+     keyframes this varied (some stages sit on opposite sides of the truck)
+     overshoots well past the nearest keyframe between segments, putting the
+     camera far closer than any keyframe intended. */
+  function buildTruckCameraPath(T, center, maxDim, forward, up, stops, positionFractions, targetFractions) {
     var right = new T.Vector3().crossVectors(forward, up).normalize();
     var trueUp = new T.Vector3().crossVectors(right, forward).normalize();
-    function pt(f, r, u) {
+    function pt(fr) {
+      var f = fr[0], r = fr[1], u = fr[2];
       return new T.Vector3(
         center.x + (forward.x * f + right.x * r + trueUp.x * u) * maxDim,
         center.y + (forward.y * f + right.y * r + trueUp.y * u) * maxDim,
         center.z + (forward.z * f + right.z * r + trueUp.z * u) * maxDim
       );
     }
-    /* Keyframe scroll stops are deliberately uneven: the truck should stay
-       recognizable at a distance through most of the scroll, so the closest
-       "detail" shot doesn't happen until 72% of the way through, and the
-       final hero shot gets a long, slow hold from 88-100%. */
-    var stops = [0, 0.20, 0.45, 0.72, 0.88, 1.0];
-    var positions = [
-      pt(-0.55, 0.85, 0.55),
-      pt(-0.40, 0.65, 0.42),
-      pt(-0.05, 0.58, 0.34),
-      pt(0.20, 0.45, 0.24),
-      pt(-0.20, -0.62, 0.38),
-      pt(-0.45, 0.70, 0.46)
-    ];
-    var targets = [
-      pt(0, 0, 0.05),
-      pt(0, 0, 0.06),
-      pt(0.15, 0, 0.08),
-      pt(0.30, 0, 0.06),
-      pt(0, 0, 0.05),
-      pt(0, 0, 0.08)
-    ];
-    /* Plain per-segment linear interpolation with eased blending, not a
-       Catmull-Rom spline: a spline threaded through keyframes this varied
-       (the swing to the opposite side reverses the sideways direction)
-       overshoots well past the nearest keyframe between segments, which
-       briefly put the camera far closer than any keyframe intended. Lerping
-       between only the two adjacent keyframes can never overshoot beyond
-       them, while the smoothstep ease still avoids a hard velocity change
-       at each keyframe. */
+    var positions = positionFractions.map(pt);
+    var targets = targetFractions.map(pt);
     function sampleAt(arr, t) {
       var i0 = 0;
       while (i0 < stops.length - 2 && t > stops[i0 + 1]) i0++;
@@ -7184,6 +7313,28 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
       }
     };
   }
+
+  /* Same six keyframes for both trucks: [forward, right, up] fractions.
+     0 Overview (wide hero), 1 Brakes (front wheel), 2 Electrical (frame
+     rail behind the cab), 3 Engine (hood/grille), 4 Transmission &
+     Drivetrain (mid-frame), 5 Preventive Maintenance (wide hero again). */
+  var TRUCK_STAGE_STOPS = [0.07, 0.22, 0.38, 0.54, 0.71, 0.90];
+  var TRUCK_STAGE_POSITIONS = [
+    [-0.55, 0.85, 0.55],
+    [0.25, 0.35, 0.18],
+    [-0.05, 0.45, 0.22],
+    [0.40, 0.30, 0.16],
+    [-0.30, 0.40, 0.20],
+    [-0.45, 0.70, 0.46]
+  ];
+  var TRUCK_STAGE_TARGETS = [
+    [0, 0, 0.05],
+    [0.42, 0.12, -0.04],
+    [0.10, 0.02, -0.06],
+    [0.55, 0.05, 0.02],
+    [-0.15, -0.02, -0.05],
+    [0, 0, 0.08]
+  ];
   function buildProceduralTruckScene(canvas) {
     if (!window.THREE) return null;
     var T = window.THREE;
@@ -7562,7 +7713,7 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
     var bcenter = new T.Vector3(); bbox.getCenter(bcenter);
     var bsize = new T.Vector3(); bbox.getSize(bsize);
     var bmaxDim = Math.max(bsize.x, bsize.y, bsize.z);
-    var cameraPath = buildTruckCameraPath(T, bcenter, bmaxDim, new T.Vector3(1, 0, 0), new T.Vector3(0, 1, 0));
+    var cameraPath = buildTruckCameraPath(T, bcenter, bmaxDim, new T.Vector3(1, 0, 0), new T.Vector3(0, 1, 0), TRUCK_STAGE_STOPS, TRUCK_STAGE_POSITIONS, TRUCK_STAGE_TARGETS);
 
     function applyProgress(progress) {
       cameraPath.apply(camera, progress);
@@ -7609,7 +7760,10 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
      calls), never regrouped or repositioned -- the truck is shown exactly
      as modeled, fully assembled, and only the camera moves around it. */
   function base64ToArrayBuffer(base64) {
-    var binary = atob(base64);
+    /* Strip whitespace before decoding: some file-transfer/storage paths
+       can re-wrap a single very long line, and stray newlines would
+       otherwise make atob() throw on an 11-million-character string. */
+    var binary = atob(base64.replace(/\s+/g, ''));
     var len = binary.length;
     var bytes = new Uint8Array(len);
     for (var i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
@@ -7844,7 +7998,7 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
       camera.far = maxDim * 8;
       camera.updateProjectionMatrix();
 
-      var cameraPath = buildTruckCameraPath(T, center, maxDim, new T.Vector3(0, 0, 1), new T.Vector3(0, 1, 0));
+      var cameraPath = buildTruckCameraPath(T, center, maxDim, new T.Vector3(0, 0, 1), new T.Vector3(0, 1, 0), TRUCK_STAGE_STOPS, TRUCK_STAGE_POSITIONS, TRUCK_STAGE_TARGETS);
       apply = function (progress) { cameraPath.apply(camera, progress); };
 
       ready = true;
@@ -7881,14 +8035,19 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
 
     function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
 
+    var STAGE_THRESHOLDS = [0, 0.14, 0.30, 0.46, 0.62, 0.80];
+    var stepButtons = Array.prototype.slice.call(section.querySelectorAll('.sd-exploded-step'));
+    var copyEls = Array.prototype.slice.call(section.querySelectorAll('.sd-exploded-copy'));
+    var hintEl = document.getElementById('sdExplodedHint');
+
     var scene3d = buildTruckScene(canvas);
     var fallbackEl = document.getElementById('sdTruckFallback');
-    var hintEl = document.getElementById('sdExplodedHint');
 
     if (!scene3d) {
       if (fallbackEl) fallbackEl.hidden = false;
       canvas.style.display = 'none';
       section.classList.add('sd-reduced-motion');
+      copyEls.forEach(function (c) { c.classList.add('is-active'); });
       return;
     }
 
@@ -7896,18 +8055,35 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
     if (prefersReducedMotion) {
       section.classList.add('sd-reduced-motion');
       scene3d.resizeIfNeeded();
-      scene3d.applyProgress(0);
+      scene3d.applyProgress(0.62);
       scene3d.renderOnce();
+      copyEls.forEach(function (c) { c.classList.add('is-active'); });
       return;
     }
 
     var lastProgress = -1;
+    var lastStage = -1;
 
     function applyProgress(progress) {
       if (Math.abs(progress - lastProgress) < 0.0008) return;
       lastProgress = progress;
       scene3d.applyProgress(progress);
       scene3d.renderOnce();
+
+      var stage = 0;
+      for (var i = STAGE_THRESHOLDS.length - 1; i >= 0; i--) {
+        if (progress >= STAGE_THRESHOLDS[i]) { stage = i; break; }
+      }
+      if (stage !== lastStage) {
+        lastStage = stage;
+        copyEls.forEach(function (c) {
+          c.classList.toggle('is-active', parseInt(c.getAttribute('data-copy'), 10) === stage);
+        });
+        stepButtons.forEach(function (b) {
+          b.classList.toggle('is-active', parseInt(b.getAttribute('data-step'), 10) === stage);
+        });
+      }
+
       if (hintEl) hintEl.classList.toggle('sd-is-hidden', progress > 0.04);
     }
 
@@ -7969,6 +8145,19 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
     window.addEventListener('scroll', onScrollOrResize, { passive: true });
     window.addEventListener('resize', onScrollOrResize);
     computeAndApply();
+
+    stepButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var stageIdx = parseInt(btn.getAttribute('data-step'), 10);
+        var targetProgress = STAGE_THRESHOLDS[stageIdx] + 0.01;
+        var navH = currentNavHeight();
+        var stageH = window.innerHeight - navH;
+        var scrollable = track.offsetHeight - stageH;
+        var rect = track.getBoundingClientRect();
+        var trackTopAbs = rect.top + window.pageYOffset;
+        window.scrollTo({ top: trackTopAbs - navH + targetProgress * scrollable, behavior: 'smooth' });
+      });
+    });
   })();
 })();
 </script>
