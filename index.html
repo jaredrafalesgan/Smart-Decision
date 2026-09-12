@@ -76,6 +76,18 @@
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    /* Full-bleed breakout: GoHighLevel's page builder wraps a pasted
+       Custom HTML element in its own centered, width-constrained
+       container, which otherwise squeezes this whole site down to that
+       width and leaves the page's own background showing as gaps on
+       both sides. This forces the wrapper back out to the full viewport
+       width regardless of how narrow or padded that parent container is. */
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
   }
   .smart-decision-site img { max-width: 100%; display: block; }
   .smart-decision-site a { color: inherit; text-decoration: none; }
