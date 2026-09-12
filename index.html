@@ -2812,8 +2812,8 @@
 
     var scene = new T.Scene();
     var camera = new T.PerspectiveCamera(32, 1, 0.1, 100);
-    var camBase = new T.Vector3(7.6, 4.3, 8.6);
-    var camTarget = new T.Vector3(0.2, 1.05, 0);
+    var camBase = new T.Vector3(9.4, 4.9, 10.4);
+    var camTarget = new T.Vector3(0.6, 1.05, 0);
     camera.position.copy(camBase);
     camera.lookAt(camTarget);
 
@@ -2841,17 +2841,40 @@
     ground.receiveShadow = renderer.shadowMap.enabled;
     scene.add(ground);
 
+    /* Simple procedural studio-gradient environment (sky/horizon/ground) so
+       metal and paint get real image-based reflections instead of flat
+       matte shading — this is the single biggest lever for "premium/real"
+       vs "prototype" without an external HDRI asset. */
+    (function addEnvironment() {
+      var c = document.createElement('canvas');
+      c.width = 16; c.height = 128;
+      var ctx = c.getContext('2d');
+      var grad = ctx.createLinearGradient(0, 0, 0, 128);
+      grad.addColorStop(0, '#cfd8e0');
+      grad.addColorStop(0.42, '#8891a0');
+      grad.addColorStop(0.5, '#3a3f47');
+      grad.addColorStop(0.58, '#16171a');
+      grad.addColorStop(1, '#020203');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 16, 128);
+      var tex = new T.CanvasTexture(c);
+      tex.mapping = T.EquirectangularReflectionMapping;
+      tex.encoding = T.sRGBEncoding;
+      scene.environment = tex;
+    })();
+
     var mat = {
-      body: new T.MeshStandardMaterial({ color: 0xb3121f, metalness: 0.55, roughness: 0.35 }),
-      chrome: new T.MeshStandardMaterial({ color: 0xdfe3e6, metalness: 1, roughness: 0.14 }),
-      steel: new T.MeshStandardMaterial({ color: 0x8a8f95, metalness: 0.75, roughness: 0.42 }),
-      darkMetal: new T.MeshStandardMaterial({ color: 0x35373b, metalness: 0.6, roughness: 0.48 }),
-      tire: new T.MeshStandardMaterial({ color: 0x0c0c0d, metalness: 0.0, roughness: 0.95 }),
-      glass: new T.MeshPhysicalMaterial({ color: 0x223140, metalness: 0.2, roughness: 0.08, transparent: true, opacity: 0.6 }),
+      body: new T.MeshPhysicalMaterial({ color: 0xb3121f, metalness: 0.45, roughness: 0.4, clearcoat: 0.35, clearcoatRoughness: 0.45, envMapIntensity: 0.7 }),
+      chrome: new T.MeshStandardMaterial({ color: 0xe7ebee, metalness: 1, roughness: 0.09, envMapIntensity: 1.4 }),
+      steel: new T.MeshStandardMaterial({ color: 0x8a8f95, metalness: 0.75, roughness: 0.4, envMapIntensity: 1 }),
+      darkMetal: new T.MeshStandardMaterial({ color: 0x35373b, metalness: 0.6, roughness: 0.46, envMapIntensity: 0.8 }),
+      darkPaint: new T.MeshStandardMaterial({ color: 0x111214, metalness: 0.5, roughness: 0.4, envMapIntensity: 0.8 }),
+      tire: new T.MeshStandardMaterial({ color: 0x0b0b0c, metalness: 0.0, roughness: 0.92, envMapIntensity: 0.3 }),
+      glass: new T.MeshPhysicalMaterial({ color: 0x1b2733, metalness: 0.3, roughness: 0.06, transparent: true, opacity: 0.62, envMapIntensity: 1.3 }),
       wireBlack: new T.MeshStandardMaterial({ color: 0x1a1a1c, roughness: 0.85 }),
       wireRed: new T.MeshStandardMaterial({ color: 0xd31627, roughness: 0.55, emissive: 0x300000, emissiveIntensity: 0.2 }),
-      headlight: new T.MeshStandardMaterial({ color: 0xfff6dd, emissive: 0xffe9a8, emissiveIntensity: 1.1, roughness: 0.3 }),
-      radiator: new T.MeshStandardMaterial({ color: 0xaab0b5, metalness: 0.7, roughness: 0.38 })
+      headlight: new T.MeshStandardMaterial({ color: 0xfff6dd, emissive: 0xffe9a8, emissiveIntensity: 1.1, roughness: 0.25 }),
+      radiator: new T.MeshStandardMaterial({ color: 0xaab0b5, metalness: 0.7, roughness: 0.36, envMapIntensity: 1 })
     };
 
     function shadowify(mesh) {
@@ -2861,72 +2884,107 @@
     }
     function box(w, h, d, material) { return shadowify(new T.Mesh(new T.BoxGeometry(w, h, d), material.clone())); }
     function cyl(rt, rb, h, seg, material) { return shadowify(new T.Mesh(new T.CylinderGeometry(rt, rb, h, seg || 16), material.clone())); }
-    function sph(r, material) { return shadowify(new T.Mesh(new T.SphereGeometry(r, 14, 12), material.clone())); }
+    function sph(r, material) { return shadowify(new T.Mesh(new T.SphereGeometry(r, 16, 14), material.clone())); }
 
     var root = new T.Group();
     scene.add(root);
 
     /* ---- FRAME: static chassis skeleton, never moves ---- */
     var frame = new T.Group();
-    var railL = box(7.4, 0.16, 0.1, mat.steel); railL.position.set(0.3, 0.55, 0.62);
-    var railR = box(7.4, 0.16, 0.1, mat.steel); railR.position.set(0.3, 0.55, -0.62);
+    var railL = box(8.0, 0.16, 0.1, mat.steel); railL.position.set(0.5, 0.55, 0.62);
+    var railR = box(8.0, 0.16, 0.1, mat.steel); railR.position.set(0.5, 0.55, -0.62);
     frame.add(railL, railR);
-    [-2.6, -1.6, -0.6, 0.6, 1.8, 2.9].forEach(function (x) {
+    [-2.6, -1.6, -0.6, 0.6, 1.6, 2.6, 3.5].forEach(function (x) {
       var cm = box(0.08, 0.14, 1.24, mat.steel);
       cm.position.set(x, 0.55, 0);
       frame.add(cm);
     });
     root.add(frame);
 
-    /* ---- CAB (cab-over style: lifts as one unit to reveal the engine) ---- */
+    /* ---- CAB: conventional (long-hood) style — the cab itself stays put;
+       the hood is a separate assembly that tilts forward like a real
+       tilt-hood to reveal the engine (see HOOD below). ---- */
     var cabGroup = new T.Group();
-    cabGroup.position.set(1.85, 0, 0);
-    var cabMain = box(1.95, 1.55, 2.1, mat.body); cabMain.position.set(0, 1.55, 0);
-    var cabRoof = box(1.9, 0.22, 2.05, mat.body); cabRoof.position.set(0.03, 2.38, 0);
-    var hood = box(1.35, 0.85, 1.9, mat.body); hood.position.set(1.55, 1.05, 0); hood.rotation.z = -0.05;
-    var grille = box(0.08, 0.62, 1.55, mat.chrome); grille.position.set(2.24, 1.02, 0);
-    var bumperFront = box(0.1, 0.28, 1.9, mat.chrome); bumperFront.position.set(2.32, 0.55, 0);
-    var windshield = box(0.08, 0.85, 1.85, mat.glass); windshield.position.set(0.92, 1.95, 0); windshield.rotation.z = 0.32;
-    var sideGlassL = box(0.75, 0.55, 0.06, mat.glass); sideGlassL.position.set(-0.35, 1.72, 1.06);
-    var sideGlassR = box(0.75, 0.55, 0.06, mat.glass); sideGlassR.position.set(-0.35, 1.72, -1.06);
-    var mirrorArmL = cyl(0.025, 0.025, 0.5, 8, mat.chrome); mirrorArmL.rotation.z = Math.PI / 2; mirrorArmL.position.set(0.75, 1.85, 1.18);
-    var mirrorHeadL = box(0.32, 0.42, 0.06, mat.darkMetal); mirrorHeadL.position.set(0.98, 1.82, 1.34);
-    var mirrorArmR = cyl(0.025, 0.025, 0.5, 8, mat.chrome); mirrorArmR.rotation.z = Math.PI / 2; mirrorArmR.position.set(0.75, 1.85, -1.18);
-    var mirrorHeadR = box(0.32, 0.42, 0.06, mat.darkMetal); mirrorHeadR.position.set(0.98, 1.82, -1.34);
-    var stackL = cyl(0.07, 0.07, 1.9, 10, mat.chrome); stackL.position.set(-0.55, 2.55, 0.85);
-    var stackR = cyl(0.07, 0.07, 1.9, 10, mat.chrome); stackR.position.set(-0.55, 2.55, -0.85);
-    var fuelTank = cyl(0.32, 0.32, 1.55, 16, mat.chrome); fuelTank.rotation.z = Math.PI / 2; fuelTank.position.set(-0.15, 0.78, 0.95);
-    var headlightL = box(0.14, 0.22, 0.06, mat.headlight); headlightL.position.set(2.34, 1.15, 0.72);
-    var headlightR = box(0.14, 0.22, 0.06, mat.headlight); headlightR.position.set(2.34, 1.15, -0.72);
-    cabGroup.add(cabMain, cabRoof, hood, grille, bumperFront, windshield, sideGlassL, sideGlassR,
-      mirrorArmL, mirrorHeadL, mirrorArmR, mirrorHeadR, stackL, stackR, fuelTank, headlightL, headlightR);
+    cabGroup.position.set(1.0, 0, 0);
+    var sleeper = box(0.95, 1.35, 1.98, mat.body); sleeper.position.set(-0.55, 1.42, 0);
+    var cabMain = box(1.55, 1.68, 2.02, mat.body); cabMain.position.set(0.35, 1.58, 0);
+    var cabRoof = box(1.5, 0.2, 1.96, mat.body); cabRoof.position.set(0.35, 2.5, 0);
+    var doorSeam = box(0.03, 1.5, 2.06, mat.darkPaint); doorSeam.position.set(-0.02, 1.5, 0);
+    var windshield = box(0.07, 0.88, 1.82, mat.glass); windshield.position.set(1.06, 2.0, 0); windshield.rotation.z = 0.34;
+    var sideGlassL = box(0.7, 0.5, 0.05, mat.glass); sideGlassL.position.set(0.15, 1.82, 1.02);
+    var sideGlassR = box(0.7, 0.5, 0.05, mat.glass); sideGlassR.position.set(0.15, 1.82, -1.02);
+    var mirrorArmL = cyl(0.025, 0.025, 0.42, 8, mat.chrome); mirrorArmL.rotation.z = Math.PI / 2; mirrorArmL.position.set(1.28, 1.92, 1.1);
+    var mirrorHeadL = box(0.1, 0.44, 0.24, mat.darkMetal); mirrorHeadL.position.set(1.46, 1.9, 1.24);
+    var mirrorArmR = cyl(0.025, 0.025, 0.42, 8, mat.chrome); mirrorArmR.rotation.z = Math.PI / 2; mirrorArmR.position.set(1.28, 1.92, -1.1);
+    var mirrorHeadR = box(0.1, 0.44, 0.24, mat.darkMetal); mirrorHeadR.position.set(1.46, 1.9, -1.24);
+    var stackL = cyl(0.08, 0.08, 2.05, 12, mat.chrome); stackL.position.set(-0.95, 2.05, 0.86);
+    var stackCapL = cyl(0.1, 0.1, 0.1, 12, mat.chrome); stackCapL.position.set(-0.95, 3.1, 0.86);
+    var stackR = cyl(0.08, 0.08, 2.05, 12, mat.chrome); stackR.position.set(-0.95, 2.05, -0.86);
+    var stackCapR = cyl(0.1, 0.1, 0.1, 12, mat.chrome); stackCapR.position.set(-0.95, 3.1, -0.86);
+    var fuelTank = cyl(0.36, 0.36, 1.7, 20, mat.chrome); fuelTank.rotation.z = Math.PI / 2; fuelTank.position.set(0.35, 0.72, 1.02);
+    var tankStrapA = cyl(0.375, 0.375, 0.06, 20, mat.darkMetal); tankStrapA.rotation.z = Math.PI / 2; tankStrapA.position.set(0.7, 0.72, 1.02);
+    var tankStrapB = cyl(0.375, 0.375, 0.06, 20, mat.darkMetal); tankStrapB.rotation.z = Math.PI / 2; tankStrapB.position.set(0.0, 0.72, 1.02);
+    var stepL = box(0.32, 0.05, 0.34, mat.darkMetal); stepL.position.set(0.55, 0.5, 1.0);
+    var stepR = box(0.32, 0.05, 0.34, mat.darkMetal); stepR.position.set(0.55, 0.5, -1.0);
+    cabGroup.add(sleeper, cabMain, cabRoof, doorSeam, windshield, sideGlassL, sideGlassR,
+      mirrorArmL, mirrorHeadL, mirrorArmR, mirrorHeadR, stackL, stackCapL, stackR, stackCapR,
+      fuelTank, tankStrapA, tankStrapB, stepL, stepR);
     root.add(cabGroup);
 
-    /* ---- ENGINE (nested inside the cab/hood footprint until it separates) ---- */
+    /* ---- HOOD: separate tilt-hood assembly (grille/bumper/headlights ride
+       with it) that swings up and forward from a front-bottom hinge to
+       expose the engine — the mechanically correct motion for a
+       conventional truck, rather than lifting the whole cab. ---- */
+    var hoodGroup = new T.Group();
+    hoodGroup.position.set(4.35, 0.55, 0);
+    var hoodBack = box(1.05, 1.0, 1.9, mat.body); hoodBack.position.set(-1.55, 0.7, 0);
+    var hoodMid = box(0.95, 0.85, 1.8, mat.body); hoodMid.position.set(-0.75, 0.625, 0);
+    var hoodFront = box(0.55, 0.7, 1.68, mat.body); hoodFront.position.set(-0.18, 0.55, 0);
+    var hoodTopSeamL = box(1.85, 0.04, 0.05, mat.darkPaint); hoodTopSeamL.position.set(-0.85, 1.18, 0.85);
+    var hoodTopSeamR = box(1.85, 0.04, 0.05, mat.darkPaint); hoodTopSeamR.position.set(-0.85, 1.18, -0.85);
+    var grilleBacking = box(0.08, 0.6, 1.55, mat.darkPaint); grilleBacking.position.set(0.05, 0.55, 0);
+    var grilleInsert = box(0.05, 0.52, 1.42, mat.chrome); grilleInsert.position.set(0.09, 0.55, 0);
+    var grilleLine1 = box(0.06, 0.03, 1.42, mat.darkPaint); grilleLine1.position.set(0.1, 0.42, 0);
+    var grilleLine2 = box(0.06, 0.03, 1.42, mat.darkPaint); grilleLine2.position.set(0.1, 0.68, 0);
+    var grilleSurround = box(0.07, 0.62, 1.58, mat.chrome); grilleSurround.position.set(0.04, 0.55, 0);
+    grilleSurround.scale.set(1, 1, 1);
+    var bumper = box(0.18, 0.24, 1.98, mat.chrome); bumper.position.set(0.18, 0.14, 0);
+    var headlightL = box(0.1, 0.26, 0.24, mat.headlight); headlightL.position.set(0.12, 0.5, 0.84);
+    var headlightR = box(0.1, 0.26, 0.24, mat.headlight); headlightR.position.set(0.12, 0.5, -0.84);
+    var headlightBezelL = box(0.06, 0.32, 0.3, mat.chrome); headlightBezelL.position.set(0.07, 0.5, 0.84);
+    var headlightBezelR = box(0.06, 0.32, 0.3, mat.chrome); headlightBezelR.position.set(0.07, 0.5, -0.84);
+    var fenderL = box(0.5, 0.1, 0.36, mat.body); fenderL.position.set(-1.15, 1.02, 0.95);
+    var fenderR = box(0.5, 0.1, 0.36, mat.body); fenderR.position.set(-1.15, 1.02, -0.95);
+    hoodGroup.add(hoodBack, hoodMid, hoodFront, hoodTopSeamL, hoodTopSeamR, grilleBacking,
+      grilleSurround, grilleInsert, grilleLine1, grilleLine2, bumper,
+      headlightL, headlightR, headlightBezelL, headlightBezelR, fenderL, fenderR);
+    root.add(hoodGroup);
+
+    /* ---- ENGINE (sits under the hood, ahead of the firewall) ---- */
     var engineGroup = new T.Group();
-    engineGroup.position.set(2.05, 0, 0);
+    engineGroup.position.set(3.15, 0, 0);
     var block = box(1.3, 0.85, 1.35, mat.darkMetal); block.position.set(0, 1.0, 0);
-    var valveCover = box(1.15, 0.22, 1.25, mat.darkMetal); valveCover.position.set(0, 1.5, 0);
-    var intake = cyl(0.24, 0.24, 0.65, 14, mat.steel); intake.rotation.x = Math.PI / 2; intake.position.set(0.2, 1.3, 0.72);
+    var valveCover = box(1.15, 0.2, 1.25, mat.darkMetal); valveCover.position.set(0, 1.45, 0);
+    var intake = cyl(0.2, 0.2, 0.35, 14, mat.steel); intake.rotation.x = Math.PI / 2; intake.position.set(0.2, 1.25, 0.45);
     var pulleyA = cyl(0.22, 0.22, 0.13, 16, mat.chrome); pulleyA.rotation.z = Math.PI / 2; pulleyA.position.set(0.58, 0.72, 0.4);
     var pulleyB = cyl(0.15, 0.15, 0.13, 16, mat.chrome); pulleyB.rotation.z = Math.PI / 2; pulleyB.position.set(0.58, 1.05, 0.66);
     var oilPan = box(1.1, 0.24, 1.2, mat.darkMetal); oilPan.position.set(0, 0.55, 0);
     engineGroup.add(block, valveCover, intake, pulleyA, pulleyB, oilPan);
     root.add(engineGroup);
 
-    /* ---- RADIATOR / COOLING ---- */
+    /* ---- RADIATOR / COOLING (mounted just behind the grille) ---- */
     var radiatorGroup = new T.Group();
-    radiatorGroup.position.set(2.75, 0, 0);
-    var radCore = box(0.16, 1.1, 1.6, mat.radiator); radCore.position.set(0, 1.15, 0);
-    var radTankTop = box(0.2, 0.18, 1.65, mat.steel); radTankTop.position.set(0, 1.75, 0);
-    var hoseA = cyl(0.06, 0.06, 0.7, 10, mat.wireBlack); hoseA.rotation.z = Math.PI / 2.4; hoseA.position.set(-0.35, 1.3, 0.3);
-    var hoseB = cyl(0.06, 0.06, 0.7, 10, mat.wireBlack); hoseB.rotation.z = Math.PI / 2.6; hoseB.position.set(-0.35, 0.9, -0.3);
+    radiatorGroup.position.set(4.05, 0, 0);
+    var radCore = box(0.16, 0.85, 1.6, mat.radiator); radCore.position.set(0, 0.95, 0);
+    var radTankTop = box(0.2, 0.1, 1.65, mat.steel); radTankTop.position.set(0, 1.42, 0);
+    var hoseA = cyl(0.05, 0.05, 0.5, 10, mat.wireBlack); hoseA.rotation.z = Math.PI / 2.4; hoseA.position.set(-0.3, 1.1, 0.3);
+    var hoseB = cyl(0.05, 0.05, 0.5, 10, mat.wireBlack); hoseB.rotation.z = Math.PI / 2.6; hoseB.position.set(-0.3, 0.8, -0.3);
     radiatorGroup.add(radCore, radTankTop, hoseA, hoseB);
     root.add(radiatorGroup);
 
     /* ---- TRANSMISSION (bolts directly behind the engine) ---- */
     var transGroup = new T.Group();
-    transGroup.position.set(0.55, 0, 0);
+    transGroup.position.set(1.65, 0, 0);
     var bellHousing = cyl(0.46, 0.56, 0.68, 20, mat.darkMetal); bellHousing.rotation.z = Math.PI / 2; bellHousing.position.set(0.46, 0.68, 0);
     var gearboxBody = box(1.0, 0.56, 0.72, mat.darkMetal); gearboxBody.position.set(-0.2, 0.65, 0);
     var ribs = new T.Group();
@@ -2940,10 +2998,10 @@
 
     /* ---- DRIVESHAFT (extends between transmission and rear differential) ---- */
     var driveGroup = new T.Group();
-    driveGroup.position.set(-1.3, 0, 0);
-    var shaft = cyl(0.08, 0.08, 2.05, 12, mat.steel); shaft.rotation.z = Math.PI / 2; shaft.position.set(0, 0.58, 0);
-    var jointA = sph(0.13, mat.chrome); jointA.position.set(0.95, 0.58, 0);
-    var jointB = sph(0.13, mat.chrome); jointB.position.set(-0.95, 0.58, 0);
+    driveGroup.position.set(-0.4, 0, 0);
+    var shaft = cyl(0.08, 0.08, 2.5, 12, mat.steel); shaft.rotation.z = Math.PI / 2; shaft.position.set(0, 0.58, 0);
+    var jointA = sph(0.13, mat.chrome); jointA.position.set(1.18, 0.58, 0);
+    var jointB = sph(0.13, mat.chrome); jointB.position.set(-1.18, 0.58, 0);
     driveGroup.add(shaft, jointA, jointB);
     root.add(driveGroup);
 
@@ -2956,46 +3014,64 @@
     rearAxleGroup.add(diffHousing, axleTubeL, axleTubeR);
     root.add(rearAxleGroup);
 
-    /* ---- FRONT AXLE / SUSPENSION ---- */
+    /* ---- FRONT AXLE / SUSPENSION (roughly under the firewall) ---- */
     var frontAxleGroup = new T.Group();
-    frontAxleGroup.position.set(2.05, 0, 0);
+    frontAxleGroup.position.set(2.55, 0, 0);
     var axleBeam = box(0.1, 0.1, 1.9, mat.steel); axleBeam.position.set(0, 0.42, 0);
     var springL = box(0.1, 0.06, 0.75, mat.darkMetal); springL.position.set(0, 0.48, 0.75);
     var springR = box(0.1, 0.06, 0.75, mat.darkMetal); springR.position.set(0, 0.48, -0.75);
     frontAxleGroup.add(axleBeam, springL, springR);
     root.add(frontAxleGroup);
 
-    /* ---- WHEELS + BRAKES ---- */
+    /* ---- WHEELS + BRAKES (alloy multi-spoke rims) ---- */
     function buildWheel(radius) {
       var g = new T.Group();
-      var tireMesh = shadowify(new T.Mesh(new T.TorusGeometry(radius, radius * 0.34, 12, 24), mat.tire.clone()));
-      var rimMesh = cyl(radius * 0.62, radius * 0.62, radius * 0.36, 20, mat.chrome);
-      rimMesh.rotation.x = Math.PI / 2;
-      g.add(tireMesh, rimMesh);
+      var tireMesh = shadowify(new T.Mesh(new T.TorusGeometry(radius, radius * 0.33, 14, 28), mat.tire.clone()));
+      var hub = cyl(radius * 0.2, radius * 0.2, radius * 0.4, 16, mat.chrome);
+      hub.rotation.x = Math.PI / 2;
+      g.add(tireMesh, hub);
+      var spokeCount = 8;
+      for (var si = 0; si < spokeCount; si++) {
+        var ang = (si / spokeCount) * Math.PI * 2;
+        var spoke = box(radius * 0.58, radius * 0.16, radius * 0.3, mat.chrome);
+        spoke.position.set(Math.cos(ang) * radius * 0.34, Math.sin(ang) * radius * 0.34, 0);
+        spoke.rotation.z = ang;
+        g.add(spoke);
+      }
+      var lugRing = cyl(radius * 0.62, radius * 0.62, radius * 0.32, 24, mat.chrome);
+      lugRing.rotation.x = Math.PI / 2;
+      g.add(lugRing);
       for (var li = 0; li < 6; li++) {
-        var ang = (li / 6) * Math.PI * 2;
-        var lug = cyl(0.02, 0.02, radius * 0.4, 6, mat.steel);
+        var lang = (li / 6) * Math.PI * 2;
+        var lug = cyl(0.02, 0.02, radius * 0.42, 6, mat.steel);
         lug.rotation.x = Math.PI / 2;
-        lug.position.set(Math.cos(ang) * radius * 0.32, Math.sin(ang) * radius * 0.32, 0);
+        lug.position.set(Math.cos(lang) * radius * 0.32, Math.sin(lang) * radius * 0.32, 0);
         g.add(lug);
       }
       return g;
     }
     function buildBrake(radius) {
       var g = new T.Group();
-      var rotor = cyl(radius * 0.62, radius * 0.62, 0.05, 20, mat.steel);
+      var rotor = cyl(radius * 0.6, radius * 0.6, 0.05, 24, mat.steel);
       rotor.rotation.x = Math.PI / 2;
-      var caliper = box(0.22, 0.28, 0.16, mat.darkMetal);
+      for (var vi = 0; vi < 12; vi++) {
+        var vang = (vi / 12) * Math.PI * 2;
+        var vent = box(0.02, 0.045, radius * 0.16, mat.darkMetal);
+        vent.position.set(Math.cos(vang) * radius * 0.45, Math.sin(vang) * radius * 0.45, 0);
+        vent.rotation.z = vang;
+        g.add(vent);
+      }
+      var caliper = box(0.22, 0.3, 0.17, mat.darkMetal);
       caliper.position.set(0, radius * 0.5, 0.05);
       g.add(rotor, caliper);
       return g;
     }
 
     var WHEEL_R_FRONT = 0.62, WHEEL_R_REAR = 0.56;
-    var frontWheelL = buildWheel(WHEEL_R_FRONT); frontWheelL.position.set(2.05, WHEEL_R_FRONT, 1.15); root.add(frontWheelL);
-    var frontWheelR = buildWheel(WHEEL_R_FRONT); frontWheelR.position.set(2.05, WHEEL_R_FRONT, -1.15); root.add(frontWheelR);
-    var frontBrakeL = buildBrake(WHEEL_R_FRONT); frontBrakeL.position.set(2.05, WHEEL_R_FRONT, 0.78); root.add(frontBrakeL);
-    var frontBrakeR = buildBrake(WHEEL_R_FRONT); frontBrakeR.position.set(2.05, WHEEL_R_FRONT, -0.78); root.add(frontBrakeR);
+    var frontWheelL = buildWheel(WHEEL_R_FRONT); frontWheelL.position.set(2.55, WHEEL_R_FRONT, 1.15); root.add(frontWheelL);
+    var frontWheelR = buildWheel(WHEEL_R_FRONT); frontWheelR.position.set(2.55, WHEEL_R_FRONT, -1.15); root.add(frontWheelR);
+    var frontBrakeL = buildBrake(WHEEL_R_FRONT); frontBrakeL.position.set(2.55, WHEEL_R_FRONT, 0.78); root.add(frontBrakeL);
+    var frontBrakeR = buildBrake(WHEEL_R_FRONT); frontBrakeR.position.set(2.55, WHEEL_R_FRONT, -0.78); root.add(frontBrakeR);
 
     var rearWheelLOuter = buildWheel(WHEEL_R_REAR); rearWheelLOuter.position.set(-2.35, WHEEL_R_REAR, 1.32); root.add(rearWheelLOuter);
     var rearWheelLInner = buildWheel(WHEEL_R_REAR); rearWheelLInner.position.set(-2.35, WHEEL_R_REAR, 1.0); root.add(rearWheelLInner);
@@ -3007,18 +3083,19 @@
     /* ---- ELECTRICAL: wiring harness + battery ---- */
     var electricalGroup = new T.Group();
     var harnessPath = new T.CatmullRomCurve3([
-      new T.Vector3(2.4, 0.62, 0.3), new T.Vector3(1.2, 0.6, 0.35),
-      new T.Vector3(0.0, 0.6, 0.3), new T.Vector3(-1.2, 0.6, 0.32),
-      new T.Vector3(-2.4, 0.6, 0.3)
+      new T.Vector3(3.9, 0.62, 0.3), new T.Vector3(2.0, 0.6, 0.35),
+      new T.Vector3(0.5, 0.6, 0.3), new T.Vector3(-1.2, 0.6, 0.32),
+      new T.Vector3(-2.6, 0.6, 0.3)
     ]);
     var harnessTube = shadowify(new T.Mesh(new T.TubeGeometry(harnessPath, 40, 0.035, 8, false), mat.wireBlack.clone()));
     var wireTube = shadowify(new T.Mesh(new T.TubeGeometry(harnessPath, 40, 0.018, 8, false), mat.wireRed.clone()));
     wireTube.position.y = 0.05;
-    var batteryBox = box(0.42, 0.28, 0.5, mat.darkMetal); batteryBox.position.set(1.65, 0.62, 0.85);
-    var batteryTermA = cyl(0.03, 0.03, 0.06, 10, mat.chrome); batteryTermA.position.set(1.55, 0.78, 0.85);
-    var batteryTermB = cyl(0.03, 0.03, 0.06, 10, mat.wireRed); batteryTermB.position.set(1.75, 0.78, 0.85);
+    var batteryBox = box(0.42, 0.28, 0.5, mat.darkMetal); batteryBox.position.set(2.15, 0.62, 0.85);
+    var batteryTermA = cyl(0.03, 0.03, 0.06, 10, mat.chrome); batteryTermA.position.set(2.05, 0.78, 0.85);
+    var batteryTermB = cyl(0.03, 0.03, 0.06, 10, mat.wireRed); batteryTermB.position.set(2.25, 0.78, 0.85);
     electricalGroup.add(harnessTube, wireTube, batteryBox, batteryTermA, batteryTermB);
     root.add(electricalGroup);
+
 
     /* ---- exploded-view registry: each part moves from its assembled rest
        position along a fixed real-world direction (wheels outward off the
@@ -3045,12 +3122,12 @@
 
       electrical: { group: electricalGroup, off: V(0, -0.55, 0.35), start: 0.28, end: 0.46 },
 
-      cab: { group: cabGroup, off: V(-0.35, 1.75, 0), rot: V(0, 0, -0.09), start: 0.42, end: 0.6 },
-      engine: { group: engineGroup, off: V(1.55, -0.35, 0), start: 0.42, end: 0.6 },
-      radiator: { group: radiatorGroup, off: V(1.05, -0.15, 0), start: 0.42, end: 0.58 },
+      hood: { group: hoodGroup, off: V(0.45, 0.55, 0), rot: V(0, 0, -0.85), start: 0.42, end: 0.6 },
+      engine: { group: engineGroup, off: V(0.6, 0.55, 0), start: 0.42, end: 0.6 },
+      radiator: { group: radiatorGroup, off: V(0.55, 0.15, 0), start: 0.42, end: 0.58 },
 
-      trans: { group: transGroup, off: V(-0.55, -0.75, 0), start: 0.6, end: 0.78 },
-      drive: { group: driveGroup, off: V(0, -0.85, 0), start: 0.6, end: 0.78 }
+      trans: { group: transGroup, off: V(-0.5, -0.65, 0), start: 0.6, end: 0.78 },
+      drive: { group: driveGroup, off: V(0, -0.75, 0), start: 0.6, end: 0.78 }
     };
     Object.keys(parts).forEach(function (key) {
       var p = parts[key];
@@ -3099,9 +3176,9 @@
       });
       var angle = progress * 0.35;
       camera.position.x = camBase.x * Math.cos(angle) - camBase.z * Math.sin(angle) * 0.15;
-      camera.position.z = camBase.z + progress * 1.1;
-      camera.position.y = camBase.y + progress * 0.35;
-      camera.lookAt(camTarget.x, camTarget.y + progress * 0.15, camTarget.z);
+      camera.position.z = camBase.z + progress * 1.8;
+      camera.position.y = camBase.y + progress * 0.9;
+      camera.lookAt(camTarget.x, camTarget.y + progress * 0.55, camTarget.z);
     }
 
     function setActiveStage(stage) {
