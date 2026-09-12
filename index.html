@@ -2886,6 +2886,72 @@
     function cyl(rt, rb, h, seg, material) { return shadowify(new T.Mesh(new T.CylinderGeometry(rt, rb, h, seg || 16), material.clone())); }
     function sph(r, material) { return shadowify(new T.Mesh(new T.SphereGeometry(r, 16, 14), material.clone())); }
 
+    /* Rounded-corner box (panel body/hood/mirror shapes): built as an
+       extruded rounded-rect footprint (in X/Z) rather than plain
+       BoxGeometry, so the vertical corner edges — the single biggest
+       "blocky primitive" tell from a 3/4 angle — read as soft, molded
+       panel edges instead of sharp CAD corners. Drop-in replacement for
+       box(w,h,d,material) plus a corner radius. */
+    function roundedBox(w, h, d, radius, material) {
+      var r = Math.min(radius, w / 2 - 0.005, d / 2 - 0.005);
+      var x = -w / 2, z = -d / 2;
+      var shape = new T.Shape();
+      shape.moveTo(x, z + r);
+      shape.lineTo(x, z + d - r);
+      shape.quadraticCurveTo(x, z + d, x + r, z + d);
+      shape.lineTo(x + w - r, z + d);
+      shape.quadraticCurveTo(x + w, z + d, x + w, z + d - r);
+      shape.lineTo(x + w, z + r);
+      shape.quadraticCurveTo(x + w, z, x + w - r, z);
+      shape.lineTo(x + r, z);
+      shape.quadraticCurveTo(x, z, x, z + r);
+      var bevel = Math.min(r * 0.6, 0.035);
+      var geo = new T.ExtrudeGeometry(shape, { depth: h, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 3, curveSegments: 6 });
+      geo.rotateX(Math.PI / 2);
+      geo.translate(0, h / 2, 0);
+      return shadowify(new T.Mesh(geo, material.clone()));
+    }
+
+    /* Small canvas-generated textures for surface detail that would be
+       expensive to model as extra geometry: a chrome grille bar pattern
+       and a tire tread pattern. */
+    function makeGrilleTexture(T_) {
+      var c = document.createElement('canvas');
+      c.width = 128; c.height = 64;
+      var ctx = c.getContext('2d');
+      ctx.fillStyle = '#1a1a1c';
+      ctx.fillRect(0, 0, 128, 64);
+      ctx.fillStyle = '#eef2f4';
+      for (var i = 0; i < 7; i++) {
+        ctx.fillRect(4, 4 + i * 8, 120, 4);
+      }
+      var tex = new T_.CanvasTexture(c);
+      tex.encoding = T_.sRGBEncoding;
+      return tex;
+    }
+    function makeTireTexture(T_) {
+      var c = document.createElement('canvas');
+      c.width = 256; c.height = 32;
+      var ctx = c.getContext('2d');
+      ctx.fillStyle = '#0c0c0d';
+      ctx.fillRect(0, 0, 256, 32);
+      ctx.strokeStyle = '#222226';
+      ctx.lineWidth = 3;
+      for (var i = 0; i < 16; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * 16, 0);
+        ctx.lineTo(i * 16 - 10, 32);
+        ctx.stroke();
+      }
+      var tex = new T_.CanvasTexture(c);
+      tex.wrapS = tex.wrapT = T_.RepeatWrapping;
+      tex.repeat.set(6, 1);
+      tex.encoding = T_.sRGBEncoding;
+      return tex;
+    }
+    var grilleTexture = makeGrilleTexture(T);
+    var tireTexture = makeTireTexture(T);
+
     var root = new T.Group();
     scene.add(root);
 
@@ -2906,17 +2972,17 @@
        tilt-hood to reveal the engine (see HOOD below). ---- */
     var cabGroup = new T.Group();
     cabGroup.position.set(1.0, 0, 0);
-    var sleeper = box(0.95, 1.35, 1.98, mat.body); sleeper.position.set(-0.55, 1.42, 0);
-    var cabMain = box(1.55, 1.68, 2.02, mat.body); cabMain.position.set(0.35, 1.58, 0);
-    var cabRoof = box(1.5, 0.2, 1.96, mat.body); cabRoof.position.set(0.35, 2.5, 0);
+    var sleeper = roundedBox(0.95, 1.35, 1.98, 0.14, mat.body); sleeper.position.set(-0.55, 1.42, 0);
+    var cabMain = roundedBox(1.55, 1.68, 2.02, 0.16, mat.body); cabMain.position.set(0.35, 1.58, 0);
+    var cabRoof = roundedBox(1.5, 0.2, 1.96, 0.1, mat.body); cabRoof.position.set(0.35, 2.5, 0);
     var doorSeam = box(0.03, 1.5, 2.06, mat.darkPaint); doorSeam.position.set(-0.02, 1.5, 0);
     var windshield = box(0.07, 0.88, 1.82, mat.glass); windshield.position.set(1.06, 2.0, 0); windshield.rotation.z = 0.34;
-    var sideGlassL = box(0.7, 0.5, 0.05, mat.glass); sideGlassL.position.set(0.15, 1.82, 1.02);
-    var sideGlassR = box(0.7, 0.5, 0.05, mat.glass); sideGlassR.position.set(0.15, 1.82, -1.02);
+    var sideGlassL = box(0.68, 0.48, 0.05, mat.glass); sideGlassL.position.set(0.15, 1.82, 1.05);
+    var sideGlassR = box(0.68, 0.48, 0.05, mat.glass); sideGlassR.position.set(0.15, 1.82, -1.05);
     var mirrorArmL = cyl(0.025, 0.025, 0.42, 8, mat.chrome); mirrorArmL.rotation.z = Math.PI / 2; mirrorArmL.position.set(1.28, 1.92, 1.1);
-    var mirrorHeadL = box(0.1, 0.44, 0.24, mat.darkMetal); mirrorHeadL.position.set(1.46, 1.9, 1.24);
+    var mirrorHeadL = roundedBox(0.1, 0.44, 0.24, 0.04, mat.darkMetal); mirrorHeadL.position.set(1.46, 1.9, 1.24);
     var mirrorArmR = cyl(0.025, 0.025, 0.42, 8, mat.chrome); mirrorArmR.rotation.z = Math.PI / 2; mirrorArmR.position.set(1.28, 1.92, -1.1);
-    var mirrorHeadR = box(0.1, 0.44, 0.24, mat.darkMetal); mirrorHeadR.position.set(1.46, 1.9, -1.24);
+    var mirrorHeadR = roundedBox(0.1, 0.44, 0.24, 0.04, mat.darkMetal); mirrorHeadR.position.set(1.46, 1.9, -1.24);
     var stackL = cyl(0.08, 0.08, 2.05, 12, mat.chrome); stackL.position.set(-0.95, 2.05, 0.86);
     var stackCapL = cyl(0.1, 0.1, 0.1, 12, mat.chrome); stackCapL.position.set(-0.95, 3.1, 0.86);
     var stackR = cyl(0.08, 0.08, 2.05, 12, mat.chrome); stackR.position.set(-0.95, 2.05, -0.86);
@@ -2937,20 +3003,21 @@
        conventional truck, rather than lifting the whole cab. ---- */
     var hoodGroup = new T.Group();
     hoodGroup.position.set(4.35, 0.55, 0);
-    var hoodBack = box(1.05, 1.0, 1.9, mat.body); hoodBack.position.set(-1.55, 0.7, 0);
-    var hoodMid = box(0.95, 0.85, 1.8, mat.body); hoodMid.position.set(-0.75, 0.625, 0);
-    var hoodFront = box(0.55, 0.7, 1.68, mat.body); hoodFront.position.set(-0.18, 0.55, 0);
+    var hoodBack = roundedBox(1.05, 1.0, 1.9, 0.12, mat.body); hoodBack.position.set(-1.55, 0.7, 0);
+    var hoodMid = roundedBox(0.95, 0.85, 1.8, 0.12, mat.body); hoodMid.position.set(-0.75, 0.625, 0);
+    var hoodFront = roundedBox(0.55, 0.7, 1.68, 0.14, mat.body); hoodFront.position.set(-0.18, 0.55, 0);
     var hoodTopSeamL = box(1.85, 0.04, 0.05, mat.darkPaint); hoodTopSeamL.position.set(-0.85, 1.18, 0.85);
     var hoodTopSeamR = box(1.85, 0.04, 0.05, mat.darkPaint); hoodTopSeamR.position.set(-0.85, 1.18, -0.85);
     var grilleBacking = box(0.08, 0.6, 1.55, mat.darkPaint); grilleBacking.position.set(0.05, 0.55, 0);
-    var grilleInsert = box(0.05, 0.52, 1.42, mat.chrome); grilleInsert.position.set(0.09, 0.55, 0);
+    var grilleMat = mat.chrome.clone(); grilleMat.map = grilleTexture; grilleMat.roughness = 0.22;
+    var grilleInsert = box(0.05, 0.52, 1.42, grilleMat); grilleInsert.position.set(0.09, 0.55, 0);
     var grilleLine1 = box(0.06, 0.03, 1.42, mat.darkPaint); grilleLine1.position.set(0.1, 0.42, 0);
     var grilleLine2 = box(0.06, 0.03, 1.42, mat.darkPaint); grilleLine2.position.set(0.1, 0.68, 0);
     var grilleSurround = box(0.07, 0.62, 1.58, mat.chrome); grilleSurround.position.set(0.04, 0.55, 0);
     grilleSurround.scale.set(1, 1, 1);
     var bumper = box(0.18, 0.24, 1.98, mat.chrome); bumper.position.set(0.18, 0.14, 0);
-    var headlightL = box(0.1, 0.26, 0.24, mat.headlight); headlightL.position.set(0.12, 0.5, 0.84);
-    var headlightR = box(0.1, 0.26, 0.24, mat.headlight); headlightR.position.set(0.12, 0.5, -0.84);
+    var headlightL = roundedBox(0.1, 0.26, 0.24, 0.05, mat.headlight); headlightL.position.set(0.12, 0.5, 0.84);
+    var headlightR = roundedBox(0.1, 0.26, 0.24, 0.05, mat.headlight); headlightR.position.set(0.12, 0.5, -0.84);
     var headlightBezelL = box(0.06, 0.32, 0.3, mat.chrome); headlightBezelL.position.set(0.07, 0.5, 0.84);
     var headlightBezelR = box(0.06, 0.32, 0.3, mat.chrome); headlightBezelR.position.set(0.07, 0.5, -0.84);
     var fenderL = box(0.5, 0.1, 0.36, mat.body); fenderL.position.set(-1.15, 1.02, 0.95);
@@ -3026,7 +3093,8 @@
     /* ---- WHEELS + BRAKES (alloy multi-spoke rims) ---- */
     function buildWheel(radius) {
       var g = new T.Group();
-      var tireMesh = shadowify(new T.Mesh(new T.TorusGeometry(radius, radius * 0.33, 14, 28), mat.tire.clone()));
+      var tireMat = mat.tire.clone(); tireMat.map = tireTexture;
+      var tireMesh = shadowify(new T.Mesh(new T.TorusGeometry(radius, radius * 0.33, 14, 28), tireMat));
       var hub = cyl(radius * 0.2, radius * 0.2, radius * 0.4, 16, mat.chrome);
       hub.rotation.x = Math.PI / 2;
       g.add(tireMesh, hub);
