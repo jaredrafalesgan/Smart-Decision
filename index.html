@@ -568,12 +568,12 @@
   .smart-decision-site .sd-service-card {
     background: var(--white);
     border: 1px solid var(--steel-200);
-    padding: 32px 28px;
     box-shadow: var(--shadow-sm);
     transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow: visible;
   }
   .smart-decision-site .sd-service-card:hover {
     box-shadow: var(--shadow-md);
@@ -588,26 +588,111 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
     flex-shrink: 0;
+  }
+  .smart-decision-site .sd-service-media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--ink-900);
+  }
+  .smart-decision-site .sd-service-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .smart-decision-site .sd-service-photo-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    padding: 18px;
+    background: linear-gradient(160deg, var(--ink-850), var(--ink-950));
+  }
+  .smart-decision-site .sd-service-photo-placeholder svg { color: var(--red-500); opacity: 0.85; }
+  .smart-decision-site .sd-service-photo-placeholder span {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--steel-300);
+    max-width: 230px;
+  }
+  .smart-decision-site .sd-service-tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 2;
+    background: var(--ink-950);
+    color: var(--white);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-left: 3px solid var(--red-500);
+  }
+  .smart-decision-site .sd-service-seal {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    z-index: 2;
+    width: 44px; height: 44px;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    background: var(--ink-950);
+    color: var(--red-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+  }
+  .smart-decision-site .sd-service-body {
+    padding: 32px 26px 24px 26px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
   }
   .smart-decision-site .sd-service-card h3 { font-size: 20px; margin-bottom: 8px; text-transform: uppercase; }
   .smart-decision-site .sd-service-card p { font-size: 14.5px; flex-grow: 1; }
+  .smart-decision-site .sd-service-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding-top: 18px;
+    margin-top: 18px;
+    border-top: 1px solid var(--steel-200);
+  }
   .smart-decision-site .sd-service-price {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--red-600);
+  }
+  .smart-decision-site .sd-service-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-family: var(--font-display);
     font-size: 12.5px;
     font-weight: 600;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--text-muted);
-    background: var(--paper-dim);
-    display: inline-block;
-    padding: 6px 12px;
-    margin-bottom: 18px;
-    width: fit-content;
-    border-left: 3px solid var(--red-500);
+    color: var(--text-ink);
+    transition: color 0.15s ease;
   }
-  .smart-decision-site .sd-service-card .sd-btn { align-self: flex-start; margin-top: auto; }
+  .smart-decision-site .sd-service-link svg { transition: transform 0.15s ease; }
+  .smart-decision-site .sd-service-link:hover { color: var(--red-600); }
+  .smart-decision-site .sd-service-link:hover svg { transform: translateX(3px); }
   .smart-decision-site .sd-services-more {
     margin-top: 40px;
     display: flex;
@@ -1260,51 +1345,117 @@
 
         <div class="sd-services-grid">
           <article class="sd-service-card">
-            <div class="sd-hex-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L14.71 3.86a2 2 0 0 0-3.42 0Z"/></svg></div>
-            <h3>24/7 Roadside Assistance</h3>
-            <p>Breakdown on the highway or job site? Our mobile units respond to get your truck back on the road as fast as possible.</p>
-            <span class="sd-service-price">[CLIENT TO PROVIDE PRICING]</span>
-            <a href="#sd-request" class="sd-btn sd-btn-outline-dark sd-btn-sm">Request Service</a>
+            <div class="sd-service-media" data-service-photo="roadside">
+              <div class="sd-service-photo-placeholder">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                <span>Photo: technician servicing a truck roadside</span>
+              </div>
+              <span class="sd-service-tag">Mobile</span>
+              <div class="sd-service-seal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L14.71 3.86a2 2 0 0 0-3.42 0Z"/></svg></div>
+            </div>
+            <div class="sd-service-body">
+              <h3>24/7 Roadside Assistance</h3>
+              <p>On-site diagnostics and repair for breakdowns across the Atlanta area.</p>
+              <div class="sd-service-footer">
+                <span class="sd-service-price">From $175</span>
+                <a href="#sd-request" class="sd-service-link">Request Service <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              </div>
+            </div>
           </article>
 
           <article class="sd-service-card">
-            <div class="sd-hex-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="7" width="15" height="11"/><path d="M16 10h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="1.8"/><circle cx="18.5" cy="18.5" r="1.8"/></svg></div>
-            <h3>Fleet Repair &amp; Maintenance</h3>
-            <p>Ongoing maintenance programs and priority repair service designed to minimize downtime across your entire fleet.</p>
-            <span class="sd-service-price">[CLIENT TO PROVIDE PRICING]</span>
-            <a href="#sd-request" class="sd-btn sd-btn-outline-dark sd-btn-sm">Request Service</a>
+            <div class="sd-service-media" data-service-photo="fleet">
+              <div class="sd-service-photo-placeholder">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                <span>Photo: lineup of fleet trucks</span>
+              </div>
+              <span class="sd-service-tag">Fleet</span>
+              <div class="sd-service-seal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="7" width="15" height="11"/><path d="M16 10h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="1.8"/><circle cx="18.5" cy="18.5" r="1.8"/></svg></div>
+            </div>
+            <div class="sd-service-body">
+              <h3>Fleet Repair &amp; Maintenance</h3>
+              <p>Scheduled service that reduces driver downtime and keeps maintenance records organized.</p>
+              <div class="sd-service-footer">
+                <span class="sd-service-price">From $175</span>
+                <a href="#sd-request" class="sd-service-link">Request Service <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              </div>
+            </div>
           </article>
 
           <article class="sd-service-card">
-            <div class="sd-hex-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
-            <h3>Medium &amp; Heavy Duty Repair</h3>
-            <p>Full-service repair for medium and heavy-duty trucks, from engine and transmission work to complete diagnostics.</p>
-            <span class="sd-service-price">[CLIENT TO PROVIDE PRICING]</span>
-            <a href="#sd-request" class="sd-btn sd-btn-outline-dark sd-btn-sm">Request Service</a>
+            <div class="sd-service-media" data-service-photo="heavy-duty">
+              <div class="sd-service-photo-placeholder">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                <span>Photo: shop &amp; mobile service trucks</span>
+              </div>
+              <span class="sd-service-tag">In Shop + Mobile</span>
+              <div class="sd-service-seal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+            </div>
+            <div class="sd-service-body">
+              <h3>Medium &amp; Heavy Duty Repair</h3>
+              <p>Brakes, drivetrain, electrical, suspension, liftgates, trailers and more.</p>
+              <div class="sd-service-footer">
+                <span class="sd-service-price">From $175</span>
+                <a href="#sd-request" class="sd-service-link">Request Service <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              </div>
+            </div>
           </article>
 
           <article class="sd-service-card">
-            <div class="sd-hex-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-            <h3>Oil Change &amp; Preventive Maintenance</h3>
-            <p>Scheduled oil changes and preventive maintenance to catch small issues before they become costly breakdowns.</p>
-            <span class="sd-service-price">[CLIENT TO PROVIDE PRICING]</span>
-            <a href="#sd-request" class="sd-btn sd-btn-outline-dark sd-btn-sm">Request Service</a>
+            <div class="sd-service-media" data-service-photo="oil-change">
+              <div class="sd-service-photo-placeholder">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                <span>Photo: oil change service</span>
+              </div>
+              <span class="sd-service-tag">Maintenance</span>
+              <div class="sd-service-seal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+            </div>
+            <div class="sd-service-body">
+              <h3>Oil Change &amp; PM Service</h3>
+              <p>15W40 service for light, medium and heavy duty vehicles, plus A and B PM service.</p>
+              <div class="sd-service-footer">
+                <span class="sd-service-price">From $150</span>
+                <a href="#sd-request" class="sd-service-link">Request Service <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              </div>
+            </div>
           </article>
 
           <article class="sd-service-card">
-            <div class="sd-hex-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg></div>
-            <h3>DPF Cleaning &amp; Regeneration</h3>
-            <p>Diesel particulate filter cleaning and regeneration service to restore performance and stay compliant.</p>
-            <span class="sd-service-price">[CLIENT TO PROVIDE PRICING]</span>
-            <a href="#sd-request" class="sd-btn sd-btn-outline-dark sd-btn-sm">Request Service</a>
+            <div class="sd-service-media" data-service-photo="dpf">
+              <div class="sd-service-photo-placeholder">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                <span>Photo: DPF filters before cleaning</span>
+              </div>
+              <span class="sd-service-tag">Emissions</span>
+              <div class="sd-service-seal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg></div>
+            </div>
+            <div class="sd-service-body">
+              <h3>DPF Cleaning &amp; Regeneration</h3>
+              <p>Cleaning, forced regeneration, resets and aftertreatment diagnostics.</p>
+              <div class="sd-service-footer">
+                <span class="sd-service-price">From $699</span>
+                <a href="#sd-request" class="sd-service-link">Request Service <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              </div>
+            </div>
           </article>
 
           <article class="sd-service-card">
-            <div class="sd-hex-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 4v2M12 18v2M4 12h2M18 12h2"/></svg></div>
-            <h3>Commercial Tire Service</h3>
-            <p>Tire inspection, replacement, and roadside tire service for trucks and trailers to keep you rolling safely.</p>
-            <span class="sd-service-price">[CLIENT TO PROVIDE PRICING]</span>
-            <a href="#sd-request" class="sd-btn sd-btn-outline-dark sd-btn-sm">Request Service</a>
+            <div class="sd-service-media" data-service-photo="tires">
+              <div class="sd-service-photo-placeholder">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                <span>Photo: tire &amp; brake service on truck</span>
+              </div>
+              <span class="sd-service-tag">Road Ready</span>
+              <div class="sd-service-seal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 4v2M12 18v2M4 12h2M18 12h2"/></svg></div>
+            </div>
+            <div class="sd-service-body">
+              <h3>Commercial Tire Service</h3>
+              <p>Inspection, repair, replacement, rotation and balancing, with roadside support.</p>
+              <div class="sd-service-footer">
+                <span class="sd-service-price">Call for Quote</span>
+                <a href="#sd-request" class="sd-service-link">Request Service <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              </div>
+            </div>
           </article>
         </div>
 
