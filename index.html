@@ -807,52 +807,206 @@
   }
   .smart-decision-site .sd-price-list li svg { color: var(--red-500); flex-shrink: 0; margin-top: 2px; }
 
-  /* ---------- Reviews ---------- */
-  .smart-decision-site .sd-reviews-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
+  /* ---------- Reviews / Google Reviews Carousel ---------- */
+  .smart-decision-site .sd-reviews-head-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 22px;
+    max-width: 980px;
+    margin: 0 auto 44px auto;
+    padding: 20px 26px;
+    background: var(--white);
+    border: 1px solid var(--steel-200);
+    box-shadow: var(--shadow-sm);
+  }
+  .smart-decision-site .sd-reviews-rating {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    min-width: 0;
+  }
+  .smart-decision-site .sd-google-g { flex-shrink: 0; }
+  .smart-decision-site .sd-reviews-rating-num {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--text-ink);
+    line-height: 1;
+  }
+  .smart-decision-site .sd-reviews-rating-meta { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .smart-decision-site .sd-reviews-stars-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .smart-decision-site .sd-google-stars { display: flex; gap: 1px; color: #f2b400; flex-shrink: 0; }
+  .smart-decision-site .sd-reviews-count { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+  .smart-decision-site .sd-reviews-note { font-size: 12px; color: var(--text-muted-2); margin: 0; }
+
+  .smart-decision-site .sd-reviews-carousel {
+    position: relative;
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .smart-decision-site .sd-reviews-viewport {
+    overflow: hidden;
+  }
+  .smart-decision-site .sd-reviews-track {
+    display: flex;
+    will-change: transform;
+    transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .smart-decision-site .sd-reviews-track.sd-no-transition { transition: none; }
+  .smart-decision-site .sd-reviews-track.sd-dragging { transition: none; cursor: grabbing; }
+
+  .smart-decision-site .sd-review-slide {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    padding: 4px 12px;
+    display: flex;
   }
   .smart-decision-site .sd-review-card {
     background: var(--white);
     border: 1px solid var(--steel-200);
-    padding: 30px 26px;
+    padding: 28px 26px 24px 26px;
     box-shadow: var(--shadow-sm);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 300px;
   }
-  .smart-decision-site .sd-review-stars { color: var(--red-500); margin-bottom: 14px; display: flex; gap: 3px; }
-  .smart-decision-site .sd-review-card p {
-    font-size: 14.5px;
-    font-style: italic;
-    color: var(--text-ink);
-    margin-bottom: 20px;
+  .smart-decision-site .sd-review-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
   }
-  .smart-decision-site .sd-review-author {
+  .smart-decision-site .sd-review-who {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding-top: 16px;
-    border-top: 1px solid var(--steel-200);
+    min-width: 0;
   }
   .smart-decision-site .sd-review-avatar {
-    width: 40px; height: 40px;
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    width: 46px; height: 46px;
+    border-radius: 50%;
     background: var(--ink-950);
+    color: var(--red-400);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-display);
     font-weight: 600;
-    color: var(--red-500);
-    font-size: 14px;
+    font-size: 15px;
     flex-shrink: 0;
+    overflow: hidden;
   }
-  .smart-decision-site .sd-review-author strong { display: block; font-size: 14px; color: var(--text-ink); }
-  .smart-decision-site .sd-review-author span { font-size: 12.5px; color: var(--text-muted-2); }
+  .smart-decision-site .sd-review-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .smart-decision-site .sd-review-who-text { min-width: 0; }
+  .smart-decision-site .sd-review-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .smart-decision-site .sd-review-date { font-size: 12px; color: var(--text-muted-2); margin-top: 2px; }
+  .smart-decision-site .sd-review-stars {
+    display: flex;
+    gap: 1px;
+    color: #f2b400;
+    margin-bottom: 12px;
+  }
+  .smart-decision-site .sd-review-text {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text-ink);
+    margin-bottom: 14px;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .smart-decision-site .sd-review-text.sd-expanded {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+  }
+  .smart-decision-site .sd-review-readmore {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0 0 14px 0;
+    font-family: var(--font-display);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--red-600);
+    cursor: pointer;
+  }
+  .smart-decision-site .sd-review-readmore:hover { color: var(--red-500); text-decoration: underline; }
+  .smart-decision-site .sd-review-source {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding-top: 14px;
+    border-top: 1px solid var(--steel-200);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted-2);
+  }
+
+  .smart-decision-site .sd-reviews-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px; height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink-950);
+    color: var(--white);
+    border: none;
+    z-index: 3;
+    clip-path: polygon(var(--cut-sm) 0, 100% 0, 100% calc(100% - var(--cut-sm)), calc(100% - var(--cut-sm)) 100%, 0 100%, 0 var(--cut-sm));
+    transition: background-color 0.15s ease;
+  }
+  .smart-decision-site .sd-reviews-arrow:hover { background: var(--red-600); }
+  .smart-decision-site .sd-reviews-arrow:focus-visible { outline: 3px solid var(--red-300); outline-offset: 2px; }
+  .smart-decision-site .sd-reviews-arrow-prev { left: -14px; }
+  .smart-decision-site .sd-reviews-arrow-next { right: -14px; }
+
+  .smart-decision-site .sd-reviews-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    margin-top: 30px;
+  }
+  .smart-decision-site .sd-reviews-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--steel-300);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease, width 0.2s ease;
+  }
+  .smart-decision-site .sd-reviews-dot:hover { background: var(--steel-500); }
+  .smart-decision-site .sd-reviews-dot[aria-current="true"] {
+    width: 26px;
+    border-radius: 5px;
+    background: var(--red-600);
+  }
+  .smart-decision-site .sd-reviews-dot:focus-visible { outline: 3px solid var(--red-300); outline-offset: 2px; }
+
   .smart-decision-site .sd-reviews-footer {
     text-align: center;
-    margin-top: 36px;
-    font-size: 14px;
+    margin-top: 20px;
+    font-size: 13px;
     color: var(--text-muted-2);
   }
 
@@ -1185,10 +1339,14 @@
     .smart-decision-site .sd-footer-grid { grid-template-columns: 1fr 1fr; }
     .smart-decision-site .sd-sticky-cta { display: grid; }
     .smart-decision-site .sd-section { padding: 72px 0; }
+    .smart-decision-site .sd-reviews-arrow-prev { left: 6px; }
+    .smart-decision-site .sd-reviews-arrow-next { right: 6px; }
+    .smart-decision-site .sd-reviews-arrow { box-shadow: var(--shadow-md); }
   }
 
   @media (max-width: 640px) {
     .smart-decision-site .sd-section { padding: 56px 0; }
+    .smart-decision-site .sd-reviews-head-row { flex-direction: column; align-items: flex-start; }
     .smart-decision-site .sd-stats { grid-template-columns: repeat(2, 1fr); }
     .smart-decision-site .sd-services-grid { grid-template-columns: 1fr; }
     .smart-decision-site .sd-pricing-grid { grid-template-columns: 1fr; }
@@ -1525,42 +1683,49 @@
       </div>
     </section>
 
-    <!-- ============ REVIEWS ============ -->
+    <!-- ============ REVIEWS / GOOGLE REVIEWS CAROUSEL ============ -->
     <section class="sd-section sd-section-dim" id="sd-reviews">
       <div class="sd-container">
         <div class="sd-section-head">
-          <span class="sd-eyebrow">Proof Of Work</span>
-          <h2>What Our Customers Say</h2>
-          <p>We're proud of the trust we've built with Atlanta fleets and owner-operators.</p>
+          <span class="sd-eyebrow">Google Reviews</span>
+          <h2>What Atlanta Fleets Say About Us</h2>
+          <p>Real feedback from real customers, straight from our Google Business Profile.</p>
         </div>
 
-        <div class="sd-reviews-grid">
-          <article class="sd-review-card">
-            <div class="sd-review-stars" aria-hidden="true">★★★★★</div>
-            <p>"[INSERT VERIFIED GOOGLE REVIEW]"</p>
-            <div class="sd-review-author">
-              <div class="sd-review-avatar">?</div>
-              <div><strong>[CLIENT TO PROVIDE]</strong><span>Verified Google Review</span></div>
+        <div class="sd-reviews-head-row">
+          <div class="sd-reviews-rating">
+            <svg class="sd-google-g" width="34" height="34" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.9-2.26 5.36-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            <div class="sd-reviews-rating-num" id="sdReviewsRatingNum">—</div>
+            <div class="sd-reviews-rating-meta">
+              <div class="sd-reviews-stars-row">
+                <span class="sd-google-stars" id="sdReviewsSummaryStars" aria-hidden="true"></span>
+                <span class="sd-reviews-count" id="sdReviewsCount">[CLIENT TO PROVIDE] Google reviews</span>
+              </div>
+              <p class="sd-reviews-note">Rating shown once verified — see live rating on Google.</p>
             </div>
-          </article>
-          <article class="sd-review-card">
-            <div class="sd-review-stars" aria-hidden="true">★★★★★</div>
-            <p>"[INSERT VERIFIED GOOGLE REVIEW]"</p>
-            <div class="sd-review-author">
-              <div class="sd-review-avatar">?</div>
-              <div><strong>[CLIENT TO PROVIDE]</strong><span>Verified Google Review</span></div>
-            </div>
-          </article>
-          <article class="sd-review-card">
-            <div class="sd-review-stars" aria-hidden="true">★★★★★</div>
-            <p>"[INSERT VERIFIED GOOGLE REVIEW]"</p>
-            <div class="sd-review-author">
-              <div class="sd-review-avatar">?</div>
-              <div><strong>[CLIENT TO PROVIDE]</strong><span>Verified Google Review</span></div>
-            </div>
-          </article>
+          </div>
+          <a href="#" id="sdReviewsViewAllLink" class="sd-btn sd-btn-outline-dark sd-btn-sm" target="_blank" rel="noopener">View All Reviews on Google</a>
         </div>
-        <p class="sd-reviews-footer">Reviews shown are placeholders. Send verified Google reviews and we will replace them with real customer feedback and star ratings.</p>
+
+        <div class="sd-reviews-carousel">
+          <button type="button" class="sd-reviews-arrow sd-reviews-arrow-prev" id="sdReviewsPrev" aria-label="Previous review">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="sd-reviews-viewport" id="sdReviewsViewport" role="region" aria-roledescription="carousel" aria-label="Customer reviews from Google">
+            <div class="sd-reviews-track" id="sdReviewsTrack"></div>
+          </div>
+          <button type="button" class="sd-reviews-arrow sd-reviews-arrow-next" id="sdReviewsNext" aria-label="Next review">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+        <div class="sd-reviews-dots" id="sdReviewsDots" role="tablist" aria-label="Choose review page"></div>
+
+        <p class="sd-reviews-footer">Reviews are pulled from this business's Google profile and shown here unedited.</p>
       </div>
     </section>
 
@@ -1788,6 +1953,43 @@
   var root = document.getElementById('sd-site');
   if (!root) return;
 
+  /* ==========================================================================
+     GOOGLE REVIEWS DATA
+     ==========================================================================
+     Centralized, easy-to-edit review data for the testimonials carousel.
+     Field names mirror the Google Places API "review" object shape
+     (author_name, rating, relative_time_description, text, profile_photo_url,
+     time) so this block can later be swapped for a live Places API / Google
+     Business Profile fetch with minimal changes to the rendering code below.
+
+     STATUS: Google's domains (maps.app.goo.gl, google.com) are blocked by
+     this environment's network egress policy, so the review links supplied
+     could not be opened to pull real names/ratings/text/photos automatically.
+     Every entry below is a clearly-marked placeholder — replace each field
+     with the verified content from the corresponding review link (listed in
+     "source_url") before publishing. Do not replace placeholders with
+     invented review content. profile_photo_url may be left null; the card
+     falls back to a clean initials avatar when no photo is provided. */
+  var GOOGLE_REVIEWS_DATA = {
+    business: {
+      name: 'Smart Decision Truck Repair',
+      rating: null,       // e.g. 4.8 — set once verified from Google
+      reviewCount: null,  // e.g. 244 — set once verified from Google
+      reviewsUrl: '#'     // paste the business's main Google "reviews" listing URL here
+    },
+    reviews: [
+      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/DzrWNvrRwJ4QJRLF6' },
+      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/o9eRzzZmfkwcMeGD7' },
+      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/Bav2sq13wmzDsYza6' },
+      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/KQHJMj9DY1JQXXSa8' },
+      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/9aiyesQerTnfAu5J9' },
+      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/2LFS6ZBVtYVuW1jR7' },
+      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/kWGc9M7offmaiEHd6' },
+      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/5tyAKJ1YVL1G1FDe8' },
+      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/mTEeZ291FRU1CqeB7' }
+    ]
+  };
+
   /* Brand logo (base64-embedded so this file stays a single, self-contained
      paste for GoHighLevel — no external asset upload required). The same
      string is reused for every placement so it is defined once, not repeated
@@ -1883,6 +2085,308 @@
       alert('Directions link is not yet configured. Please provide a confirmed Google Maps link for this location.');
     });
   }
+
+  /* ==========================================================================
+     GOOGLE REVIEWS CAROUSEL
+     ========================================================================== */
+  (function initReviewsCarousel() {
+    var data = GOOGLE_REVIEWS_DATA;
+    var reviews = data.reviews;
+    var n = reviews.length;
+    if (!n) return;
+
+    var viewport = document.getElementById('sdReviewsViewport');
+    var track = document.getElementById('sdReviewsTrack');
+    var dotsWrap = document.getElementById('sdReviewsDots');
+    var prevBtn = document.getElementById('sdReviewsPrev');
+    var nextBtn = document.getElementById('sdReviewsNext');
+    var carouselWrap = viewport ? viewport.closest('.sd-reviews-carousel') : null;
+    if (!viewport || !track || !carouselWrap) return;
+
+    var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var STAR_PATH = 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z';
+
+    function starsHTML(rating, size) {
+      size = size || 15;
+      var out = '';
+      for (var i = 0; i < 5; i++) {
+        var fill = Math.max(0, Math.min(1, rating - i)) * 100;
+        out += '<span style="position:relative;display:inline-block;width:' + size + 'px;height:' + size + 'px;">' +
+          '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" style="position:absolute;top:0;left:0;fill:#dadce0;"><path d="' + STAR_PATH + '"/></svg>' +
+          '<span style="position:absolute;top:0;left:0;width:' + fill + '%;height:100%;overflow:hidden;">' +
+          '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" style="fill:#f2b400;display:block;"><path d="' + STAR_PATH + '"/></svg>' +
+          '</span></span>';
+      }
+      return out;
+    }
+
+    function initials(name) {
+      if (!name || name.indexOf('[') === 0) return '?';
+      var parts = name.trim().split(/\s+/);
+      var first = parts[0] ? parts[0].charAt(0) : '';
+      var second = parts.length > 1 ? parts[parts.length - 1].charAt(0) : '';
+      return (first + second).toUpperCase() || '?';
+    }
+
+    function avatarHTML(review) {
+      if (review.profile_photo_url) {
+        return '<div class="sd-review-avatar"><img src="' + review.profile_photo_url + '" alt="" loading="lazy"></div>';
+      }
+      return '<div class="sd-review-avatar" aria-hidden="true">' + initials(review.author_name) + '</div>';
+    }
+
+    function cardHTML(review, isClone, realIndex) {
+      var safeText = String(review.text || '');
+      return (
+        '<article class="sd-review-card" role="group" aria-roledescription="slide"' +
+        (isClone ? ' aria-hidden="true" tabindex="-1"' : ' aria-label="Review ' + (realIndex + 1) + ' of ' + n + '"') + '>' +
+          '<div class="sd-review-top">' +
+            '<div class="sd-review-who">' +
+              avatarHTML(review) +
+              '<div class="sd-review-who-text">' +
+                '<div class="sd-review-name">' + review.author_name + '</div>' +
+                '<div class="sd-review-date">' + review.relative_time_description + '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="sd-review-stars" aria-hidden="true">' + starsHTML(review.rating, 15) + '</div>' +
+          '<p class="sd-review-text">' + safeText + '</p>' +
+          '<button type="button" class="sd-review-readmore" hidden>Read more</button>' +
+          '<div class="sd-review-source">' +
+            '<svg width="14" height="14" viewBox="0 0 48 48" aria-hidden="true">' +
+              '<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>' +
+              '<path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.9-2.26 5.36-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>' +
+              '<path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78z"/>' +
+              '<path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>' +
+            '</svg>' +
+            '<span>Posted on Google</span>' +
+          '</div>' +
+        '</article>'
+      );
+    }
+
+    var visibleCount = 3;
+    var currentIndex = 0;
+    var autoplayTimer = null;
+    var slideStep = 0;
+
+    function getVisibleCount() {
+      var w = window.innerWidth;
+      if (w <= 640) return 1;
+      if (w <= 1024) return 2;
+      return 3;
+    }
+
+    function buildSlides() {
+      visibleCount = Math.min(getVisibleCount(), n);
+      var leading = reviews.slice(n - visibleCount);
+      var trailing = reviews.slice(0, visibleCount);
+
+      var html = '';
+      leading.forEach(function (r) { html += cardWrap(cardHTML(r, true)); });
+      reviews.forEach(function (r, i) { html += cardWrap(cardHTML(r, false, i)); });
+      trailing.forEach(function (r) { html += cardWrap(cardHTML(r, true)); });
+      track.innerHTML = html;
+
+      var basis = (100 / visibleCount) + '%';
+      Array.prototype.forEach.call(track.children, function (slide) {
+        slide.style.flexBasis = basis;
+        slide.style.maxWidth = basis;
+      });
+
+      currentIndex = visibleCount;
+      measureStep();
+      setPosition(false);
+      applyReadMore();
+      buildDots();
+      updateDots();
+    }
+
+    function cardWrap(inner) {
+      return '<div class="sd-review-slide">' + inner + '</div>';
+    }
+
+    function measureStep() {
+      var first = track.children[0];
+      slideStep = first ? first.getBoundingClientRect().width : viewport.clientWidth / visibleCount;
+    }
+
+    function setPosition(withTransition) {
+      if (!withTransition) track.classList.add('sd-no-transition');
+      track.style.transform = 'translateX(' + (-currentIndex * slideStep) + 'px)';
+      if (!withTransition) {
+        // force reflow so the next transform change (if any) transitions again
+        void track.offsetHeight;
+        track.classList.remove('sd-no-transition');
+      }
+    }
+
+    function realIndexFromCurrent() {
+      return ((currentIndex - visibleCount) % n + n) % n;
+    }
+
+    function buildDots() {
+      var html = '';
+      for (var i = 0; i < n; i++) {
+        html += '<button type="button" class="sd-reviews-dot" role="tab" aria-label="Go to review ' + (i + 1) + ' of ' + n + '" data-index="' + i + '"></button>';
+      }
+      dotsWrap.innerHTML = html;
+      Array.prototype.forEach.call(dotsWrap.children, function (dot) {
+        dot.addEventListener('click', function () {
+          goTo(visibleCount + parseInt(dot.getAttribute('data-index'), 10), true);
+          restartAutoplay();
+        });
+      });
+    }
+
+    function updateDots() {
+      var real = realIndexFromCurrent();
+      Array.prototype.forEach.call(dotsWrap.children, function (dot, i) {
+        var isCurrent = i === real;
+        dot.setAttribute('aria-current', isCurrent ? 'true' : 'false');
+      });
+    }
+
+    function goTo(index, withTransition) {
+      currentIndex = index;
+      setPosition(withTransition !== false);
+      updateDots();
+    }
+
+    function next() { goTo(currentIndex + 1, true); }
+    function prev() { goTo(currentIndex - 1, true); }
+
+    track.addEventListener('transitionend', function (e) {
+      if (e.target !== track || e.propertyName !== 'transform') return;
+      if (currentIndex >= visibleCount + n) {
+        goTo(currentIndex - n, false);
+      } else if (currentIndex < visibleCount) {
+        goTo(currentIndex + n, false);
+      }
+    });
+
+    function applyReadMore() {
+      Array.prototype.forEach.call(track.querySelectorAll('.sd-review-card'), function (card) {
+        var textEl = card.querySelector('.sd-review-text');
+        var btn = card.querySelector('.sd-review-readmore');
+        if (!textEl || !btn) return;
+        // measure after layout
+        requestAnimationFrame(function () {
+          if (textEl.scrollHeight - textEl.clientHeight > 2) {
+            btn.hidden = false;
+            btn.addEventListener('click', function () {
+              var expanded = textEl.classList.toggle('sd-expanded');
+              btn.textContent = expanded ? 'Read less' : 'Read more';
+            });
+          }
+        });
+      });
+    }
+
+    function startAutoplay() {
+      if (prefersReducedMotion) return;
+      stopAutoplay();
+      autoplayTimer = setInterval(next, 6000);
+    }
+    function stopAutoplay() {
+      if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; }
+    }
+    function restartAutoplay() {
+      stopAutoplay();
+      startAutoplay();
+    }
+
+    carouselWrap.addEventListener('mouseenter', stopAutoplay);
+    carouselWrap.addEventListener('mouseleave', startAutoplay);
+    carouselWrap.addEventListener('focusin', stopAutoplay);
+    carouselWrap.addEventListener('focusout', startAutoplay);
+
+    prevBtn.addEventListener('click', function () { prev(); restartAutoplay(); });
+    nextBtn.addEventListener('click', function () { next(); restartAutoplay(); });
+
+    carouselWrap.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); restartAutoplay(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); next(); restartAutoplay(); }
+    });
+
+    /* Touch / pointer drag support */
+    var dragging = false, dragStartX = 0, dragBaseX = 0, dragMoved = false;
+    track.addEventListener('pointerdown', function (e) {
+      dragging = true;
+      dragMoved = false;
+      dragStartX = e.clientX;
+      dragBaseX = -currentIndex * slideStep;
+      track.classList.add('sd-dragging');
+      stopAutoplay();
+      try { track.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    track.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var delta = e.clientX - dragStartX;
+      if (Math.abs(delta) > 4) dragMoved = true;
+      track.style.transform = 'translateX(' + (dragBaseX + delta) + 'px)';
+    });
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      track.classList.remove('sd-dragging');
+      var delta = (e.clientX || 0) - dragStartX;
+      if (Math.abs(delta) > 60) {
+        if (delta < 0) next(); else prev();
+      } else {
+        setPosition(true);
+      }
+      restartAutoplay();
+    }
+    track.addEventListener('pointerup', endDrag);
+    track.addEventListener('pointercancel', endDrag);
+    track.addEventListener('click', function (e) {
+      if (dragMoved) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    var lastVisibleCount = null;
+    function handleResize() {
+      var vc = getVisibleCount();
+      if (vc !== lastVisibleCount) {
+        lastVisibleCount = vc;
+        buildSlides();
+      } else {
+        measureStep();
+        setPosition(false);
+      }
+    }
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleResize, 150);
+    });
+
+    /* Rating summary + View All link */
+    var ratingNumEl = document.getElementById('sdReviewsRatingNum');
+    var countEl = document.getElementById('sdReviewsCount');
+    var summaryStarsEl = document.getElementById('sdReviewsSummaryStars');
+    var viewAllLink = document.getElementById('sdReviewsViewAllLink');
+    if (data.business.rating != null) {
+      ratingNumEl.textContent = data.business.rating.toFixed(1);
+    }
+    if (data.business.reviewCount != null) {
+      countEl.textContent = data.business.reviewCount + ' Google reviews';
+    }
+    summaryStarsEl.innerHTML = starsHTML(data.business.rating || 0, 18);
+    if (viewAllLink) {
+      viewAllLink.href = data.business.reviewsUrl;
+      if (!data.business.reviewsUrl || data.business.reviewsUrl === '#') {
+        viewAllLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          alert('This link is not yet configured. Please provide the business\'s main Google reviews URL.');
+        });
+      }
+    }
+
+    lastVisibleCount = getVisibleCount();
+    buildSlides();
+    startAutoplay();
+  })();
 })();
 </script>
 </body>
