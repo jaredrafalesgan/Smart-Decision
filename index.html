@@ -842,26 +842,75 @@
   .smart-decision-site .sd-reviews-count { font-size: 13px; color: var(--text-muted); font-weight: 600; }
   .smart-decision-site .sd-reviews-note { font-size: 12px; color: var(--text-muted-2); margin: 0; }
 
-  .smart-decision-site .sd-reviews-carousel {
-    position: relative;
-    max-width: 1120px;
-    margin: 0 auto;
+  .smart-decision-site .sd-reviews-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
   }
-  .smart-decision-site .sd-reviews-viewport {
+  .smart-decision-site .sd-reviews-pause {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--white);
+    border: 1px solid var(--steel-300);
+    padding: 11px 16px;
+    font-family: var(--font-display);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-ink);
+    cursor: pointer;
+    clip-path: polygon(var(--cut-sm) 0, 100% 0, 100% calc(100% - var(--cut-sm)), calc(100% - var(--cut-sm)) 100%, 0 100%, 0 var(--cut-sm));
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .smart-decision-site .sd-reviews-pause[hidden] { display: none; }
+  .smart-decision-site .sd-reviews-pause:hover { border-color: var(--red-500); color: var(--red-600); }
+  .smart-decision-site .sd-reviews-pause:focus-visible { outline: 3px solid var(--red-300); outline-offset: 2px; }
+  .smart-decision-site .sd-reviews-pause .sd-icon-play,
+  .smart-decision-site .sd-reviews-pause .sd-icon-pause { flex-shrink: 0; }
+
+  .smart-decision-site .sd-reviews-marquee {
+    position: relative;
     overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
   }
   .smart-decision-site .sd-reviews-track {
     display: flex;
+    width: max-content;
+    gap: 24px;
     will-change: transform;
-    transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    animation-name: sd-reviews-scroll;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
   }
-  .smart-decision-site .sd-reviews-track.sd-no-transition { transition: none; }
-  .smart-decision-site .sd-reviews-track.sd-dragging { transition: none; cursor: grabbing; }
+  @keyframes sd-reviews-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .smart-decision-site .sd-reviews-marquee:hover .sd-reviews-track,
+  .smart-decision-site .sd-reviews-marquee:focus-within .sd-reviews-track,
+  .smart-decision-site .sd-reviews-track.sd-paused {
+    animation-play-state: paused;
+  }
+  .smart-decision-site .sd-reviews-marquee.sd-reduced-motion {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .smart-decision-site .sd-reviews-marquee.sd-reduced-motion .sd-reviews-track {
+    animation: none !important;
+    transform: none !important;
+  }
 
   .smart-decision-site .sd-review-slide {
-    flex: 0 0 auto;
+    flex: 0 0 380px;
+    width: 380px;
+    max-width: 85vw;
     box-sizing: border-box;
-    padding: 4px 12px;
     display: flex;
   }
   .smart-decision-site .sd-review-card {
@@ -873,7 +922,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    min-height: 300px;
+    min-height: 340px;
   }
   .smart-decision-site .sd-review-top {
     display: flex;
@@ -939,82 +988,21 @@
     margin-bottom: 14px;
     flex-grow: 1;
     display: -webkit-box;
-    -webkit-line-clamp: 6;
+    -webkit-line-clamp: 9;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .smart-decision-site .sd-review-text.sd-expanded {
-    -webkit-line-clamp: unset;
-    overflow: visible;
-  }
-  .smart-decision-site .sd-review-readmore {
-    align-self: flex-start;
-    background: none;
-    border: none;
-    padding: 0 0 14px 0;
-    font-family: var(--font-display);
-    font-size: 12.5px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--red-600);
-    cursor: pointer;
-  }
-  .smart-decision-site .sd-review-readmore:hover { color: var(--red-500); text-decoration: underline; }
   .smart-decision-site .sd-review-source {
     display: flex;
     align-items: center;
     gap: 7px;
     padding-top: 14px;
+    margin-top: auto;
     border-top: 1px solid var(--steel-200);
     font-size: 12px;
     font-weight: 600;
     color: var(--text-muted-2);
   }
-
-  .smart-decision-site .sd-reviews-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 46px; height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--ink-950);
-    color: var(--white);
-    border: none;
-    z-index: 3;
-    clip-path: polygon(var(--cut-sm) 0, 100% 0, 100% calc(100% - var(--cut-sm)), calc(100% - var(--cut-sm)) 100%, 0 100%, 0 var(--cut-sm));
-    transition: background-color 0.15s ease;
-  }
-  .smart-decision-site .sd-reviews-arrow:hover { background: var(--red-600); }
-  .smart-decision-site .sd-reviews-arrow:focus-visible { outline: 3px solid var(--red-300); outline-offset: 2px; }
-  .smart-decision-site .sd-reviews-arrow-prev { left: -14px; }
-  .smart-decision-site .sd-reviews-arrow-next { right: -14px; }
-
-  .smart-decision-site .sd-reviews-dots {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 9px;
-    margin-top: 30px;
-  }
-  .smart-decision-site .sd-reviews-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--steel-300);
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    transition: background-color 0.2s ease, width 0.2s ease;
-  }
-  .smart-decision-site .sd-reviews-dot:hover { background: var(--steel-500); }
-  .smart-decision-site .sd-reviews-dot[aria-current="true"] {
-    width: 26px;
-    border-radius: 5px;
-    background: var(--red-600);
-  }
-  .smart-decision-site .sd-reviews-dot:focus-visible { outline: 3px solid var(--red-300); outline-offset: 2px; }
 
   .smart-decision-site .sd-reviews-footer {
     text-align: center;
@@ -1352,9 +1340,6 @@
     .smart-decision-site .sd-footer-grid { grid-template-columns: 1fr 1fr; }
     .smart-decision-site .sd-sticky-cta { display: grid; }
     .smart-decision-site .sd-section { padding: 72px 0; }
-    .smart-decision-site .sd-reviews-arrow-prev { left: 6px; }
-    .smart-decision-site .sd-reviews-arrow-next { right: 6px; }
-    .smart-decision-site .sd-reviews-arrow { box-shadow: var(--shadow-md); }
   }
 
   @media (max-width: 640px) {
@@ -1722,23 +1707,21 @@
               <p class="sd-reviews-note">Rating shown once verified — see live rating on Google.</p>
             </div>
           </div>
-          <a href="#" id="sdReviewsViewAllLink" class="sd-btn sd-btn-outline-dark sd-btn-sm" target="_blank" rel="noopener">View All Reviews on Google</a>
-        </div>
-
-        <div class="sd-reviews-carousel">
-          <button type="button" class="sd-reviews-arrow sd-reviews-arrow-prev" id="sdReviewsPrev" aria-label="Previous review">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <div class="sd-reviews-viewport" id="sdReviewsViewport" role="region" aria-roledescription="carousel" aria-label="Customer reviews from Google">
-            <div class="sd-reviews-track" id="sdReviewsTrack"></div>
+          <div class="sd-reviews-head-actions">
+            <a href="#" id="sdReviewsViewAllLink" class="sd-btn sd-btn-outline-dark sd-btn-sm" target="_blank" rel="noopener">View All Reviews on Google</a>
+            <button type="button" class="sd-reviews-pause" id="sdReviewsPauseToggle" aria-pressed="false" aria-label="Pause the scrolling reviews">
+              <svg class="sd-icon-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+              <svg class="sd-icon-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M8 5v14l11-7z"/></svg>
+              <span class="sd-reviews-pause-label">Pause</span>
+            </button>
           </div>
-          <button type="button" class="sd-reviews-arrow sd-reviews-arrow-next" id="sdReviewsNext" aria-label="Next review">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
         </div>
-        <div class="sd-reviews-dots" id="sdReviewsDots" role="tablist" aria-label="Choose review page"></div>
 
-        <p class="sd-reviews-footer">Reviews are pulled from this business's Google profile and shown here unedited.</p>
+        <div class="sd-reviews-marquee" id="sdReviewsMarquee" role="region" aria-label="Customer reviews from Google, scrolling continuously">
+          <div class="sd-reviews-track" id="sdReviewsTrack"></div>
+        </div>
+
+        <p class="sd-reviews-footer">Reviews are pulled from this business's Google profile and shown here unedited. Hover or focus the reviews to pause scrolling and read at your own pace.</p>
       </div>
     </section>
 
@@ -2107,19 +2090,21 @@
   /* ==========================================================================
      GOOGLE REVIEWS CAROUSEL
      ========================================================================== */
-  (function initReviewsCarousel() {
+  (function initReviewsMarquee() {
     var data = GOOGLE_REVIEWS_DATA;
-    var reviews = data.reviews;
+    /* Only genuinely verified reviews are ever rendered — placeholder
+       entries (author_name starting with "[") are skipped so the live
+       marquee never shows unverified/fabricated-looking content. */
+    var reviews = data.reviews.filter(function (r) {
+      return r.author_name && r.author_name.indexOf('[') !== 0;
+    });
     var n = reviews.length;
     if (!n) return;
 
-    var viewport = document.getElementById('sdReviewsViewport');
+    var marquee = document.getElementById('sdReviewsMarquee');
     var track = document.getElementById('sdReviewsTrack');
-    var dotsWrap = document.getElementById('sdReviewsDots');
-    var prevBtn = document.getElementById('sdReviewsPrev');
-    var nextBtn = document.getElementById('sdReviewsNext');
-    var carouselWrap = viewport ? viewport.closest('.sd-reviews-carousel') : null;
-    if (!viewport || !track || !carouselWrap) return;
+    var pauseToggle = document.getElementById('sdReviewsPauseToggle');
+    if (!marquee || !track) return;
 
     var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var STAR_PATH = 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z';
@@ -2156,8 +2141,8 @@
     function cardHTML(review, isClone, realIndex) {
       var safeText = String(review.text || '');
       return (
-        '<article class="sd-review-card" role="group" aria-roledescription="slide"' +
-        (isClone ? ' aria-hidden="true" tabindex="-1"' : ' aria-label="Review ' + (realIndex + 1) + ' of ' + n + '"') + '>' +
+        '<article class="sd-review-card"' +
+        (isClone ? ' aria-hidden="true"' : ' role="group" aria-roledescription="review" aria-label="Review ' + (realIndex + 1) + ' of ' + n + '"') + '>' +
           '<div class="sd-review-top">' +
             '<div class="sd-review-who">' +
               avatarHTML(review) +
@@ -2172,7 +2157,6 @@
             '<span class="sd-review-date">' + review.relative_time_description + '</span>' +
           '</div>' +
           '<p class="sd-review-text">' + safeText + '</p>' +
-          '<button type="button" class="sd-review-readmore" hidden>Read more</button>' +
           '<div class="sd-review-source">' +
             '<svg width="14" height="14" viewBox="0 0 48 48" aria-hidden="true">' +
               '<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>' +
@@ -2186,201 +2170,61 @@
       );
     }
 
-    var visibleCount = 3;
-    var currentIndex = 0;
-    var autoplayTimer = null;
-    var slideStep = 0;
-
-    function getVisibleCount() {
-      var w = window.innerWidth;
-      if (w <= 640) return 1;
-      if (w <= 1024) return 2;
-      return 3;
-    }
-
-    function buildSlides() {
-      visibleCount = Math.min(getVisibleCount(), n);
-      var leading = reviews.slice(n - visibleCount);
-      var trailing = reviews.slice(0, visibleCount);
-
-      var html = '';
-      leading.forEach(function (r) { html += cardWrap(cardHTML(r, true)); });
-      reviews.forEach(function (r, i) { html += cardWrap(cardHTML(r, false, i)); });
-      trailing.forEach(function (r) { html += cardWrap(cardHTML(r, true)); });
-      track.innerHTML = html;
-
-      var basis = (100 / visibleCount) + '%';
-      Array.prototype.forEach.call(track.children, function (slide) {
-        slide.style.flexBasis = basis;
-        slide.style.maxWidth = basis;
-      });
-
-      currentIndex = visibleCount;
-      measureStep();
-      setPosition(false);
-      applyReadMore();
-      buildDots();
-      updateDots();
-    }
-
-    function cardWrap(inner) {
+    function slideWrap(inner) {
       return '<div class="sd-review-slide">' + inner + '</div>';
     }
 
-    function measureStep() {
-      var first = track.children[0];
-      slideStep = first ? first.getBoundingClientRect().width : viewport.clientWidth / visibleCount;
-    }
+    /* Continuous marquee: render the real review set once for content
+       (and accessibility), then — unless the visitor prefers reduced
+       motion — append an aria-hidden duplicate set so the track is
+       exactly double width. Animating from translateX(0) to
+       translateX(-50%) then means the loop point is pixel-identical to
+       the start, so it repeats forever with no visible jump or reset. */
+    var PX_PER_SECOND = 42; // reading-comfortable speed; lower = slower
 
-    function setPosition(withTransition) {
-      if (!withTransition) track.classList.add('sd-no-transition');
-      track.style.transform = 'translateX(' + (-currentIndex * slideStep) + 'px)';
-      if (!withTransition) {
-        // force reflow so the next transform change (if any) transitions again
-        void track.offsetHeight;
-        track.classList.remove('sd-no-transition');
+    function build() {
+      var realHTML = reviews.map(function (r, i) { return slideWrap(cardHTML(r, false, i)); }).join('');
+
+      if (prefersReducedMotion) {
+        track.innerHTML = realHTML;
+        marquee.classList.add('sd-reduced-motion');
+        if (pauseToggle) pauseToggle.hidden = true;
+        return;
       }
+
+      var cloneHTML = reviews.map(function (r) { return slideWrap(cardHTML(r, true)); }).join('');
+      track.innerHTML = realHTML + cloneHTML;
+      applySpeed();
     }
 
-    function realIndexFromCurrent() {
-      return ((currentIndex - visibleCount) % n + n) % n;
+    function applySpeed() {
+      var halfWidth = track.scrollWidth / 2;
+      var duration = Math.max(halfWidth / PX_PER_SECOND, 10);
+      track.style.animationDuration = duration + 's';
     }
 
-    function buildDots() {
-      var html = '';
-      for (var i = 0; i < n; i++) {
-        html += '<button type="button" class="sd-reviews-dot" role="tab" aria-label="Go to review ' + (i + 1) + ' of ' + n + '" data-index="' + i + '"></button>';
-      }
-      dotsWrap.innerHTML = html;
-      Array.prototype.forEach.call(dotsWrap.children, function (dot) {
-        dot.addEventListener('click', function () {
-          goTo(visibleCount + parseInt(dot.getAttribute('data-index'), 10), true);
-          restartAutoplay();
-        });
-      });
-    }
-
-    function updateDots() {
-      var real = realIndexFromCurrent();
-      Array.prototype.forEach.call(dotsWrap.children, function (dot, i) {
-        var isCurrent = i === real;
-        dot.setAttribute('aria-current', isCurrent ? 'true' : 'false');
-      });
-    }
-
-    function goTo(index, withTransition) {
-      currentIndex = index;
-      setPosition(withTransition !== false);
-      updateDots();
-    }
-
-    function next() { goTo(currentIndex + 1, true); }
-    function prev() { goTo(currentIndex - 1, true); }
-
-    track.addEventListener('transitionend', function (e) {
-      if (e.target !== track || e.propertyName !== 'transform') return;
-      if (currentIndex >= visibleCount + n) {
-        goTo(currentIndex - n, false);
-      } else if (currentIndex < visibleCount) {
-        goTo(currentIndex + n, false);
-      }
-    });
-
-    function applyReadMore() {
-      Array.prototype.forEach.call(track.querySelectorAll('.sd-review-card'), function (card) {
-        var textEl = card.querySelector('.sd-review-text');
-        var btn = card.querySelector('.sd-review-readmore');
-        if (!textEl || !btn) return;
-        // measure after layout
-        requestAnimationFrame(function () {
-          if (textEl.scrollHeight - textEl.clientHeight > 2) {
-            btn.hidden = false;
-            btn.addEventListener('click', function () {
-              var expanded = textEl.classList.toggle('sd-expanded');
-              btn.textContent = expanded ? 'Read less' : 'Read more';
-            });
-          }
-        });
-      });
-    }
-
-    function startAutoplay() {
-      if (prefersReducedMotion) return;
-      stopAutoplay();
-      autoplayTimer = setInterval(next, 6000);
-    }
-    function stopAutoplay() {
-      if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; }
-    }
-    function restartAutoplay() {
-      stopAutoplay();
-      startAutoplay();
-    }
-
-    carouselWrap.addEventListener('mouseenter', stopAutoplay);
-    carouselWrap.addEventListener('mouseleave', startAutoplay);
-    carouselWrap.addEventListener('focusin', stopAutoplay);
-    carouselWrap.addEventListener('focusout', startAutoplay);
-
-    prevBtn.addEventListener('click', function () { prev(); restartAutoplay(); });
-    nextBtn.addEventListener('click', function () { next(); restartAutoplay(); });
-
-    carouselWrap.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); restartAutoplay(); }
-      else if (e.key === 'ArrowRight') { e.preventDefault(); next(); restartAutoplay(); }
-    });
-
-    /* Touch / pointer drag support */
-    var dragging = false, dragStartX = 0, dragBaseX = 0, dragMoved = false;
-    track.addEventListener('pointerdown', function (e) {
-      dragging = true;
-      dragMoved = false;
-      dragStartX = e.clientX;
-      dragBaseX = -currentIndex * slideStep;
-      track.classList.add('sd-dragging');
-      stopAutoplay();
-      try { track.setPointerCapture(e.pointerId); } catch (err) {}
-    });
-    track.addEventListener('pointermove', function (e) {
-      if (!dragging) return;
-      var delta = e.clientX - dragStartX;
-      if (Math.abs(delta) > 4) dragMoved = true;
-      track.style.transform = 'translateX(' + (dragBaseX + delta) + 'px)';
-    });
-    function endDrag(e) {
-      if (!dragging) return;
-      dragging = false;
-      track.classList.remove('sd-dragging');
-      var delta = (e.clientX || 0) - dragStartX;
-      if (Math.abs(delta) > 60) {
-        if (delta < 0) next(); else prev();
-      } else {
-        setPosition(true);
-      }
-      restartAutoplay();
-    }
-    track.addEventListener('pointerup', endDrag);
-    track.addEventListener('pointercancel', endDrag);
-    track.addEventListener('click', function (e) {
-      if (dragMoved) { e.preventDefault(); e.stopPropagation(); }
-    }, true);
-
-    var lastVisibleCount = null;
-    function handleResize() {
-      var vc = getVisibleCount();
-      if (vc !== lastVisibleCount) {
-        lastVisibleCount = vc;
-        buildSlides();
-      } else {
-        measureStep();
-        setPosition(false);
-      }
-    }
     var resizeTimer;
     window.addEventListener('resize', function () {
+      if (prefersReducedMotion) return;
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(handleResize, 150);
+      resizeTimer = setTimeout(applySpeed, 200);
     });
+
+    /* Manual pause/play toggle (kept in addition to hover/focus-pause so
+       touch-only and keyboard visitors also have an explicit way to stop
+       the motion, per WCAG 2.2.2 for auto-updating content). */
+    if (pauseToggle) {
+      var paused = false;
+      pauseToggle.addEventListener('click', function () {
+        paused = !paused;
+        track.classList.toggle('sd-paused', paused);
+        pauseToggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
+        pauseToggle.setAttribute('aria-label', paused ? 'Resume the scrolling reviews' : 'Pause the scrolling reviews');
+        pauseToggle.querySelector('.sd-icon-pause').hidden = paused;
+        pauseToggle.querySelector('.sd-icon-play').hidden = !paused;
+        pauseToggle.querySelector('.sd-reviews-pause-label').textContent = paused ? 'Play' : 'Pause';
+      });
+    }
 
     /* Rating summary + View All link */
     var ratingNumEl = document.getElementById('sdReviewsRatingNum');
@@ -2404,9 +2248,7 @@
       }
     }
 
-    lastVisibleCount = getVisibleCount();
-    buildSlides();
-    startAutoplay();
+    build();
   })();
 })();
 </script>
