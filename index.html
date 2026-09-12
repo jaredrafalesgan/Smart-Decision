@@ -527,12 +527,17 @@
   .smart-decision-site .sd-cta-band .sd-btn-outline:hover { background: rgba(255,255,255,0.14); border-color: var(--white); }
 
   /* ---------- Stats ---------- */
+  .smart-decision-site .sd-stats-wrap {
+    border-top: 3px solid var(--red-500);
+    background: var(--steel-200);
+    border-left: 1px solid var(--steel-200);
+    border-right: 1px solid var(--steel-200);
+    border-bottom: 1px solid var(--steel-200);
+  }
   .smart-decision-site .sd-stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2px;
-    background: var(--steel-200);
-    border: 1px solid var(--steel-200);
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
   }
   .smart-decision-site .sd-stat {
     background: var(--white);
@@ -557,6 +562,12 @@
     font-weight: 600;
     letter-spacing: 0.02em;
     color: var(--text-muted);
+  }
+  .smart-decision-site .sd-stats-note {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--text-muted-2);
+    margin: 14px 0 0 0;
   }
 
   /* ---------- Services ---------- */
@@ -1154,6 +1165,7 @@
 
   @media (max-width: 1024px) {
     .smart-decision-site .sd-stats { grid-template-columns: repeat(2, 1fr); }
+    .smart-decision-site .sd-stat:nth-child(5) { grid-column: 1 / -1; }
     .smart-decision-site .sd-services-grid { grid-template-columns: repeat(2, 1fr); }
     .smart-decision-site .sd-pricing-grid { grid-template-columns: repeat(2, 1fr); }
     .smart-decision-site .sd-reviews-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1177,7 +1189,7 @@
 
   @media (max-width: 640px) {
     .smart-decision-site .sd-section { padding: 56px 0; }
-    .smart-decision-site .sd-stats { grid-template-columns: 1fr 1fr; }
+    .smart-decision-site .sd-stats { grid-template-columns: repeat(2, 1fr); }
     .smart-decision-site .sd-services-grid { grid-template-columns: 1fr; }
     .smart-decision-site .sd-pricing-grid { grid-template-columns: 1fr; }
     .smart-decision-site .sd-reviews-grid { grid-template-columns: 1fr; }
@@ -1313,24 +1325,31 @@
     <!-- ============ TRUST / STATS ============ -->
     <section class="sd-section" aria-label="Why fleets trust us">
       <div class="sd-container">
-        <div class="sd-stats">
-          <div class="sd-stat">
-            <div class="sd-stat-num">24/7</div>
-            <div class="sd-stat-label">Emergency Roadside Availability</div>
-          </div>
-          <div class="sd-stat">
-            <div class="sd-stat-num">Atlanta</div>
-            <div class="sd-stat-label">&amp; Surrounding Service Area</div>
-          </div>
-          <div class="sd-stat">
-            <div class="sd-stat-num sd-placeholder-num">[CLIENT TO PROVIDE]</div>
-            <div class="sd-stat-label">Years Serving Atlanta Fleets</div>
-          </div>
-          <div class="sd-stat">
-            <div class="sd-stat-num sd-placeholder-num">[CLIENT TO PROVIDE]</div>
-            <div class="sd-stat-label">Trucks &amp; Trailers Serviced</div>
+        <div class="sd-stats-wrap">
+          <div class="sd-stats">
+            <div class="sd-stat">
+              <div class="sd-stat-num">20+</div>
+              <div class="sd-stat-label">Years of Experience</div>
+            </div>
+            <div class="sd-stat">
+              <div class="sd-stat-num">4.8★</div>
+              <div class="sd-stat-label">Google Rating</div>
+            </div>
+            <div class="sd-stat">
+              <div class="sd-stat-num">244</div>
+              <div class="sd-stat-label">Google Reviews</div>
+            </div>
+            <div class="sd-stat">
+              <div class="sd-stat-num">85%</div>
+              <div class="sd-stat-label">Mechanical Work Can Be Done On Site*</div>
+            </div>
+            <div class="sd-stat">
+              <div class="sd-stat-num">12 mo.</div>
+              <div class="sd-stat-label">Unlimited Mileage Labor Warranty</div>
+            </div>
           </div>
         </div>
+        <p class="sd-stats-note">*Applies to most mobile-eligible repairs; some jobs require in-shop equipment.</p>
       </div>
     </section>
 
