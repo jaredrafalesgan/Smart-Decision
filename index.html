@@ -2793,7 +2793,7 @@
      license) rather than CDN-loaded, keeping this a single self-contained
      file like the rest of the page's embedded assets.
      ========================================================================== */
-  function buildTruckScene(canvas) {
+  function buildProceduralTruckScene(canvas) {
     if (!window.THREE) return null;
     var T = window.THREE;
     var isNarrow = window.innerWidth < 768;
@@ -3279,6 +3279,466 @@
       renderOnce: renderOnce,
       resizeIfNeeded: resizeIfNeeded
     };
+  }
+
+  /* ---- Real truck model (desktop/tablet, motion allowed only) ----
+     Loads a CC-BY-4.0 licensed Peterbilt 6x6 model ("The Peterbilt 6x6" by
+     David_Holiday, sketchfab.com/David_Holiday) hosted alongside this repo
+     and served from GitHub's raw content host, instead of embedding the
+     ~8.7MB file as base64 in this page. The model ships as one unlabeled
+     mesh soup (a SketchUp/Sketchfab export with ~4,300 generically-named
+     meshes), so it's reorganized here into independently-animatable groups
+     (6 wheel/tire assemblies, suspension + axle housings per axle, the
+     painted body shell) by nearest-hub spatial classification and merged
+     per material for performance. It has no engine/transmission/driveshaft/
+     radiator/wiring geometry of its own (a sealed exterior shell), so those
+     stages reuse the small procedural sub-assemblies built above, scaled up
+     and tucked out of sight until their stage of the sequence begins. */
+  var TRUCK_ASSET_BASE = 'https://raw.githubusercontent.com/jaredrafalesgan/Smart-Decision/3ec9fe998c37dbb8232cbd43fb2d91f1c46871f0/assets/truck/';
+
+  function loadScriptOnce(src) {
+    return new Promise(function (resolve, reject) {
+      var el = document.createElement('script');
+      el.src = src;
+      el.onload = function () { resolve(); };
+      el.onerror = function () { reject(new Error('failed to load ' + src)); };
+      document.head.appendChild(el);
+    });
+  }
+
+  function buildGLBTruckScene(canvas) {
+    if (!window.THREE) return null;
+    var T = window.THREE;
+    var renderer;
+    try {
+      renderer = new T.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+    } catch (e) { return null; }
+    if (!renderer.getContext()) return null;
+
+    renderer.setClearColor(0x0a0a0c, 1);
+    renderer.outputEncoding = T.sRGBEncoding;
+    renderer.toneMapping = T.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+
+    var scene = new T.Scene();
+    scene.background = new T.Color(0x0a0a0c);
+    var camera = new T.PerspectiveCamera(35, 1, 0.1, 10000);
+
+    scene.add(new T.HemisphereLight(0xbfc9d6, 0x0a0a0c, 0.6));
+    var key = new T.DirectionalLight(0xffffff, 1.2);
+    key.position.set(200, 400, 250);
+    scene.add(key);
+    var fill = new T.DirectionalLight(0x8fb4ff, 0.3);
+    fill.position.set(-250, 150, -150);
+    scene.add(fill);
+    (function addEnvironment() {
+      var c = document.createElement('canvas');
+      c.width = 16; c.height = 128;
+      var ctx = c.getContext('2d');
+      var grad = ctx.createLinearGradient(0, 0, 0, 128);
+      grad.addColorStop(0, '#cfd8e0');
+      grad.addColorStop(0.42, '#8891a0');
+      grad.addColorStop(0.5, '#3a3f47');
+      grad.addColorStop(0.58, '#16171a');
+      grad.addColorStop(1, '#020203');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 16, 128);
+      var tex = new T.CanvasTexture(c);
+      tex.mapping = T.EquirectangularReflectionMapping;
+      tex.encoding = T.sRGBEncoding;
+      scene.environment = tex;
+    })();
+
+    var lastProgress = 0, lastStage = 0, ready = false;
+    var apply = function () {}, setStage = function () {};
+
+    function applyProgress(progress) { lastProgress = progress; apply(progress); }
+    function setActiveStage(stage) { lastStage = stage; setStage(stage); }
+    function renderOnce() { renderer.render(scene, camera); }
+
+    var lastW = 0, lastH = 0;
+    function resize() {
+      var w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h) return;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      renderer.setPixelRatio(dpr);
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderOnce();
+    }
+    function resizeIfNeeded() {
+      var w = canvas.clientWidth, h = canvas.clientHeight;
+      if (w !== lastW || h !== lastH) { lastW = w; lastH = h; resize(); }
+    }
+    resizeIfNeeded();
+
+    var api = {
+      applyProgress: applyProgress,
+      setActiveStage: setActiveStage,
+      renderOnce: renderOnce,
+      resizeIfNeeded: resizeIfNeeded
+    };
+
+    var fellBack = false;
+    function fallBackToProcedural() {
+      if (fellBack) return;
+      fellBack = true;
+      var proc = buildProceduralTruckScene(canvas);
+      if (!proc) return;
+      api.applyProgress = proc.applyProgress;
+      api.setActiveStage = proc.setActiveStage;
+      api.renderOnce = proc.renderOnce;
+      api.resizeIfNeeded = proc.resizeIfNeeded;
+      api.applyProgress(lastProgress);
+      api.setActiveStage(lastStage);
+      api.resizeIfNeeded();
+      api.renderOnce();
+    }
+    /* Don't leave a visitor on a slow/stalled connection staring at an
+       empty canvas indefinitely -- a hung request never fires onerror. */
+    setTimeout(function () { if (!ready) fallBackToProcedural(); }, 15000);
+
+    loadScriptOnce(TRUCK_ASSET_BASE + 'GLTFLoader.js')
+      .then(function () { return loadScriptOnce(TRUCK_ASSET_BASE + 'BufferGeometryUtils.js'); })
+      .then(function () {
+        if (!T.GLTFLoader || !T.BufferGeometryUtils) throw new Error('loader utilities unavailable');
+        var loader = new T.GLTFLoader();
+        loader.load(TRUCK_ASSET_BASE + 'peterbilt-truck.glb', function (gltf) {
+          if (fellBack) return; /* the 9s timeout already switched to the procedural fallback */
+          try {
+            setUpGLBTruck(gltf);
+          } catch (e) {
+            fallBackToProcedural();
+          }
+        }, undefined, function () {
+          fallBackToProcedural();
+        });
+      })
+      .catch(function () {
+        fallBackToProcedural();
+      });
+
+    function setUpGLBTruck(gltf) {
+      var model = gltf.scene;
+      scene.add(model);
+      model.updateMatrixWorld(true);
+
+      var HUBS = {
+        frontL: { x: 24.48, y: 18, z: 391 }, frontR: { x: 139.68, y: 16, z: 390 },
+        rear1L: { x: 27.74, y: 18.5, z: 34.6 }, rear1R: { x: 126.72, y: 16, z: 34.6 },
+        rear2L: { x: 27.74, y: 18.5, z: 102.6 }, rear2R: { x: 126.72, y: 16, z: 102.6 }
+      };
+      var AXLES = {
+        front: { x: 82, y: 17, z: 390 }, rear1: { x: 82, y: 17, z: 34.6 }, rear2: { x: 82, y: 17, z: 102.6 }
+      };
+      function nearestKey(map, px, py, pz) {
+        var best = null, bestD = Infinity;
+        Object.keys(map).forEach(function (k) {
+          var p = map[k];
+          var d = (p.x - px) * (p.x - px) + (p.y - py) * (p.y - py) + (p.z - pz) * (p.z - pz);
+          if (d < bestD) { bestD = d; best = k; }
+        });
+        return best;
+      }
+
+      var box3 = new T.Box3(), c = new T.Vector3();
+      var buckets = { cabBody: [], suspension: {}, axleHousing: {} };
+      ['frontL', 'frontR', 'rear1L', 'rear1R', 'rear2L', 'rear2R'].forEach(function (k) { buckets[k] = []; });
+      Object.keys(AXLES).forEach(function (k) { buckets.suspension[k] = []; buckets.axleHousing[k] = []; });
+      var chassisMeshes = [];
+      var chipboardMat = null;
+
+      model.traverse(function (obj) {
+        if (!obj.isMesh) return;
+        var mname = obj.material ? obj.material.name : '';
+        if (mname === 'Chipboard') { buckets.cabBody.push(obj); chipboardMat = obj.material; return; }
+        if (mname === 'tire' || mname === 'rims' || mname === 'letters_on_tires') {
+          box3.setFromObject(obj); box3.getCenter(c);
+          buckets[nearestKey(HUBS, c.x, c.y, c.z)].push(obj);
+          return;
+        }
+        if (mname === 'Metal_Corrogated_Shiny') {
+          box3.setFromObject(obj); box3.getCenter(c);
+          buckets.suspension[nearestKey(AXLES, c.x, c.y, c.z)].push(obj);
+          return;
+        }
+        if (mname === 'DarkGray') {
+          box3.setFromObject(obj); box3.getCenter(c);
+          buckets.axleHousing[nearestKey(AXLES, c.x, c.y, c.z)].push(obj);
+          return;
+        }
+        chassisMeshes.push(obj);
+      });
+
+      if (chipboardMat) {
+        chipboardMat.color.setRGB(0.65, 0.06, 0.09);
+        chipboardMat.metalness = 0.5;
+        chipboardMat.roughness = 0.35;
+      }
+
+      function deinterleave(geo) {
+        ['position', 'normal', 'uv'].forEach(function (name) {
+          var attr = geo.getAttribute(name);
+          if (attr && attr.isInterleavedBufferAttribute) {
+            var itemSize = attr.itemSize;
+            var array = new Float32Array(attr.count * itemSize);
+            for (var i = 0; i < attr.count; i++) {
+              array[i * itemSize] = attr.getX(i);
+              if (itemSize > 1) array[i * itemSize + 1] = attr.getY(i);
+              if (itemSize > 2) array[i * itemSize + 2] = attr.getZ(i);
+            }
+            geo.setAttribute(name, new T.BufferAttribute(array, itemSize, false));
+          }
+        });
+        return geo;
+      }
+      var MERGE_CHUNK_SIZE = 250;
+      function mergeByMaterial(meshes, targetGroup) {
+        targetGroup.updateMatrixWorld(true);
+        var toLocal = new T.Matrix4().copy(targetGroup.matrixWorld).invert();
+        var byMaterial = {};
+        meshes.forEach(function (mesh) {
+          var key = mesh.material ? mesh.material.uuid : 'none';
+          (byMaterial[key] = byMaterial[key] || []).push(mesh);
+        });
+        Object.keys(byMaterial).forEach(function (key) {
+          var group = byMaterial[key];
+          for (var start = 0; start < group.length; start += MERGE_CHUNK_SIZE) {
+            var chunk = group.slice(start, start + MERGE_CHUNK_SIZE);
+            var geometries = chunk.map(function (mesh) {
+              var geo = mesh.geometry.clone();
+              var localMatrix = new T.Matrix4().multiplyMatrices(toLocal, mesh.matrixWorld);
+              geo.applyMatrix4(localMatrix);
+              deinterleave(geo);
+              return geo;
+            });
+            try {
+              var merged = T.BufferGeometryUtils.mergeBufferGeometries(geometries, false);
+              var mergedMesh = new T.Mesh(merged, chunk[0].material);
+              targetGroup.add(mergedMesh);
+            } catch (e) {
+              chunk.forEach(function (mesh) { targetGroup.attach(mesh); });
+            }
+          }
+        });
+      }
+
+      var wheelGroups = {};
+      ['frontL', 'frontR', 'rear1L', 'rear1R', 'rear2L', 'rear2R'].forEach(function (k) {
+        var g = new T.Group();
+        var hub = HUBS[k];
+        g.position.set(hub.x, hub.y, hub.z);
+        mergeByMaterial(buckets[k], g);
+        scene.add(g);
+        wheelGroups[k] = g;
+      });
+
+      var cabGroup = new T.Group();
+      buckets.cabBody.forEach(function (mesh) { cabGroup.attach(mesh); });
+      scene.add(cabGroup);
+
+      var suspensionGroups = {}, axleGroups = {};
+      Object.keys(AXLES).forEach(function (k) {
+        var sg = new T.Group();
+        var ax = AXLES[k];
+        sg.position.set(ax.x, ax.y, ax.z);
+        mergeByMaterial(buckets.suspension[k], sg);
+        scene.add(sg);
+        suspensionGroups[k] = sg;
+
+        var ag = new T.Group();
+        ag.position.set(ax.x, ax.y, ax.z);
+        mergeByMaterial(buckets.axleHousing[k], ag);
+        scene.add(ag);
+        axleGroups[k] = ag;
+      });
+
+      var chassisGroup = new T.Group();
+      mergeByMaterial(chassisMeshes, chassisGroup);
+      scene.add(chassisGroup);
+
+      /* ---- reused small procedural sub-assemblies for systems this GLB
+         doesn't model (engine/transmission/driveshaft/radiator/wiring),
+         scaled up ~65x to match this model's real-world-unit scale and
+         rotated 90deg about Y: they were authored with local X = vehicle
+         length / local Z = vehicle width, while this GLB uses Z = length,
+         X = width. Kept invisible until their own stage begins so they
+         never have to be pixel-perfectly hidden behind the real bodywork
+         at rest. ---- */
+      var rmat = {
+        steel: new T.MeshStandardMaterial({ color: 0x8a8f95, metalness: 0.75, roughness: 0.4 }),
+        chrome: new T.MeshStandardMaterial({ color: 0xe7ebee, metalness: 1, roughness: 0.09 }),
+        darkMetal: new T.MeshStandardMaterial({ color: 0x35373b, metalness: 0.6, roughness: 0.46 }),
+        wireBlack: new T.MeshStandardMaterial({ color: 0x1a1a1c, roughness: 0.85 }),
+        wireRed: new T.MeshStandardMaterial({ color: 0xd31627, roughness: 0.55, emissive: 0x300000, emissiveIntensity: 0.2 }),
+        radiator: new T.MeshStandardMaterial({ color: 0xaab0b5, metalness: 0.7, roughness: 0.36 })
+      };
+      function rbox(w, h, d, material) { return new T.Mesh(new T.BoxGeometry(w, h, d), material.clone()); }
+      function rcyl(rt, rb, h, seg, material) { return new T.Mesh(new T.CylinderGeometry(rt, rb, h, seg || 16), material.clone()); }
+      function rsph(r, material) { return new T.Mesh(new T.SphereGeometry(r, 16, 14), material.clone()); }
+
+      var engineGroup = new T.Group();
+      var block = rbox(1.3, 0.85, 1.35, rmat.darkMetal); block.position.set(0, 1.0, 0);
+      var valveCover = rbox(1.15, 0.2, 1.25, rmat.darkMetal); valveCover.position.set(0, 1.45, 0);
+      var intake = rcyl(0.2, 0.2, 0.35, 14, rmat.steel); intake.rotation.x = Math.PI / 2; intake.position.set(0.2, 1.25, 0.45);
+      var pulleyA = rcyl(0.22, 0.22, 0.13, 16, rmat.chrome); pulleyA.rotation.z = Math.PI / 2; pulleyA.position.set(0.58, 0.72, 0.4);
+      var pulleyB = rcyl(0.15, 0.15, 0.13, 16, rmat.chrome); pulleyB.rotation.z = Math.PI / 2; pulleyB.position.set(0.58, 1.05, 0.66);
+      var oilPan = rbox(1.1, 0.24, 1.2, rmat.darkMetal); oilPan.position.set(0, 0.55, 0);
+      engineGroup.add(block, valveCover, intake, pulleyA, pulleyB, oilPan);
+
+      var radiatorGroup = new T.Group();
+      var radCore = rbox(0.16, 0.85, 1.6, rmat.radiator); radCore.position.set(0, 0.95, 0);
+      var radTankTop = rbox(0.2, 0.1, 1.65, rmat.steel); radTankTop.position.set(0, 1.42, 0);
+      var hoseA = rcyl(0.05, 0.05, 0.5, 10, rmat.wireBlack); hoseA.rotation.z = Math.PI / 2.4; hoseA.position.set(-0.3, 1.1, 0.3);
+      var hoseB = rcyl(0.05, 0.05, 0.5, 10, rmat.wireBlack); hoseB.rotation.z = Math.PI / 2.6; hoseB.position.set(-0.3, 0.8, -0.3);
+      radiatorGroup.add(radCore, radTankTop, hoseA, hoseB);
+
+      var transGroup = new T.Group();
+      var bellHousing = rcyl(0.46, 0.56, 0.68, 20, rmat.darkMetal); bellHousing.rotation.z = Math.PI / 2; bellHousing.position.set(0.46, 0.68, 0);
+      var gearboxBody = rbox(1.0, 0.56, 0.72, rmat.darkMetal); gearboxBody.position.set(-0.2, 0.65, 0);
+      for (var ri = 0; ri < 4; ri++) {
+        var rib = rbox(0.08, 0.58, 0.74, rmat.darkMetal);
+        rib.position.set(-0.53 + ri * 0.24, 0.65, 0);
+        transGroup.add(rib);
+      }
+      transGroup.add(bellHousing, gearboxBody);
+
+      var driveGroup = new T.Group();
+      var shaft = rcyl(0.08, 0.08, 2.5, 12, rmat.steel); shaft.rotation.z = Math.PI / 2; shaft.position.set(0, 0.58, 0);
+      var jointA = rsph(0.13, rmat.chrome); jointA.position.set(1.18, 0.58, 0);
+      var jointB = rsph(0.13, rmat.chrome); jointB.position.set(-1.18, 0.58, 0);
+      driveGroup.add(shaft, jointA, jointB);
+
+      var electricalGroup = new T.Group();
+      var harnessPath = new T.CatmullRomCurve3([
+        new T.Vector3(1.95, 0.62, 0.15), new T.Vector3(1.0, 0.6, 0.18),
+        new T.Vector3(0.25, 0.6, 0.15), new T.Vector3(-0.6, 0.6, 0.16),
+        new T.Vector3(-1.3, 0.6, 0.15)
+      ]);
+      var harnessTube = new T.Mesh(new T.TubeGeometry(harnessPath, 40, 0.035, 8, false), rmat.wireBlack.clone());
+      var wireTube = new T.Mesh(new T.TubeGeometry(harnessPath, 40, 0.018, 8, false), rmat.wireRed.clone());
+      wireTube.position.y = 0.05;
+      var batteryBox = rbox(0.42, 0.28, 0.5, rmat.darkMetal); batteryBox.position.set(1.05, 0.62, 0.42);
+      electricalGroup.add(harnessTube, wireTube, batteryBox);
+
+      var GLB_SCALE = 65;
+      [engineGroup, radiatorGroup, transGroup, driveGroup, electricalGroup].forEach(function (g) {
+        g.scale.set(GLB_SCALE, GLB_SCALE, GLB_SCALE);
+        g.rotation.y = Math.PI / 2;
+      });
+      engineGroup.position.set(82, 20, 358);
+      radiatorGroup.position.set(82, 22, 383);
+      transGroup.position.set(82, 15, 298);
+      driveGroup.position.set(82, 12, 190);
+      electricalGroup.position.set(82, 19, 240);
+      scene.add(engineGroup, radiatorGroup, transGroup, driveGroup, electricalGroup);
+
+      /* ---- exploded-view registry, timed to match the copy/step cadence
+         already established by STAGE_THRESHOLDS in initExplodedTruck
+         below: 0-0.14 Overview, 0.14-0.30 Brakes, 0.30-0.46 Electrical,
+         0.46-0.62 Engine, 0.62-0.80 Transmission & Drivetrain, 0.80-1
+         Preventive maintenance. This model has no separate brake caliper
+         mesh, so the wheel + axle-housing separation stands in for the
+         "Brakes" beat, same as the procedural truck's own wheel timing. ---- */
+      function V(x, y, z) { return new T.Vector3(x, y, z); }
+      var parts = {};
+      parts.frontL = { group: wheelGroups.frontL, off: V(-45, -5, 0), start: 0.08, end: 0.20 };
+      parts.frontR = { group: wheelGroups.frontR, off: V(45, -5, 0), start: 0.08, end: 0.20 };
+      parts.rear1L = { group: wheelGroups.rear1L, off: V(-55, -5, 0), start: 0.08, end: 0.20 };
+      parts.rear1R = { group: wheelGroups.rear1R, off: V(55, -5, 0), start: 0.08, end: 0.20 };
+      parts.rear2L = { group: wheelGroups.rear2L, off: V(-55, -5, 0), start: 0.08, end: 0.20 };
+      parts.rear2R = { group: wheelGroups.rear2R, off: V(55, -5, 0), start: 0.08, end: 0.20 };
+      Object.keys(AXLES).forEach(function (k) {
+        parts['susp_' + k] = { group: suspensionGroups[k], off: V(0, -25, 0), start: 0.16, end: 0.32 };
+        parts['axle_' + k] = { group: axleGroups[k], off: V(0, -40, 0), start: 0.18, end: 0.34 };
+      });
+      parts.electrical = { group: electricalGroup, off: V(0, -45, 0), start: 0.28, end: 0.46, hiddenAtRest: true };
+      parts.cabBody = { group: cabGroup, off: V(0, 90, 40), start: 0.42, end: 0.60 };
+      parts.engine = { group: engineGroup, off: V(0, 15, 30), start: 0.42, end: 0.60, hiddenAtRest: true };
+      parts.radiator = { group: radiatorGroup, off: V(0, 10, 35), start: 0.42, end: 0.58, hiddenAtRest: true };
+      parts.trans = { group: transGroup, off: V(0, -30, -30), start: 0.60, end: 0.78, hiddenAtRest: true };
+      parts.drive = { group: driveGroup, off: V(0, -35, 0), start: 0.60, end: 0.78, hiddenAtRest: true };
+      Object.keys(parts).forEach(function (key) {
+        var p = parts[key];
+        p.rest = p.group.position.clone();
+      });
+
+      var liveMeshMap = {
+        1: [wheelGroups.frontL, wheelGroups.frontR, wheelGroups.rear1L, wheelGroups.rear1R, wheelGroups.rear2L, wheelGroups.rear2R,
+          axleGroups.front, axleGroups.rear1, axleGroups.rear2],
+        2: [electricalGroup],
+        3: [engineGroup, radiatorGroup],
+        4: [transGroup, driveGroup]
+      };
+      var allHighlightable = liveMeshMap[1].concat(liveMeshMap[2], liveMeshMap[3], liveMeshMap[4]);
+      function setEmissive(group, on) {
+        group.traverse(function (obj) {
+          if (obj.isMesh && obj.material && 'emissive' in obj.material) {
+            if (!obj.userData._baseEmissiveSet) {
+              obj.userData._baseEmissive = obj.material.emissive.clone();
+              obj.userData._baseEmissiveIntensity = obj.material.emissiveIntensity || 0;
+              obj.userData._baseEmissiveSet = true;
+            }
+            if (on) {
+              obj.material.emissive.setHex(0xd31627);
+              obj.material.emissiveIntensity = 0.03;
+            } else {
+              obj.material.emissive.copy(obj.userData._baseEmissive);
+              obj.material.emissiveIntensity = obj.userData._baseEmissiveIntensity;
+            }
+          }
+        });
+      }
+
+      function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+      function lp(p, s, e) { return clamp01((p - s) / (e - s)); }
+
+      var bbox = new T.Box3().setFromObject(model);
+      var size = new T.Vector3(); bbox.getSize(size);
+      var center = new T.Vector3(); bbox.getCenter(center);
+      var maxDim = Math.max(size.x, size.y, size.z);
+      var camBase = new T.Vector3(center.x + maxDim * 0.75, center.y + maxDim * 0.7, center.z + maxDim * 0.75);
+      var camTarget = center.clone();
+
+      apply = function (progress) {
+        Object.keys(parts).forEach(function (key) {
+          var p = parts[key];
+          var t = lp(progress, p.start, p.end);
+          p.group.position.set(p.rest.x + p.off.x * t, p.rest.y + p.off.y * t, p.rest.z + p.off.z * t);
+          if (p.hiddenAtRest) p.group.visible = progress >= p.start;
+        });
+        camera.position.set(
+          camBase.x + progress * maxDim * 0.2,
+          camBase.y + progress * maxDim * 0.18,
+          camBase.z + progress * maxDim * 0.1
+        );
+        camera.lookAt(camTarget.x, camTarget.y + progress * maxDim * 0.06, camTarget.z);
+        camera.near = maxDim / 100; camera.far = maxDim * 3;
+        camera.updateProjectionMatrix();
+      };
+      setStage = function (stage) {
+        allHighlightable.forEach(function (g) { setEmissive(g, false); });
+        if (liveMeshMap[stage]) liveMeshMap[stage].forEach(function (g) { setEmissive(g, true); });
+      };
+
+      ready = true;
+      apply(lastProgress);
+      setStage(lastStage);
+      resizeIfNeeded();
+      renderOnce();
+    }
+
+    return api;
+  }
+
+  function buildTruckScene(canvas) {
+    if (!window.THREE) return null;
+    var isNarrow = window.innerWidth < 768;
+    var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isNarrow || prefersReducedMotion) return buildProceduralTruckScene(canvas);
+    var glbScene = buildGLBTruckScene(canvas);
+    return glbScene || buildProceduralTruckScene(canvas);
   }
 
   (function initExplodedTruck() {
