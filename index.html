@@ -912,13 +912,26 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .smart-decision-site .sd-review-date { font-size: 12px; color: var(--text-muted-2); margin-top: 2px; }
-  .smart-decision-site .sd-review-stars {
+  .smart-decision-site .sd-review-meta {
+    font-size: 12px;
+    color: var(--text-muted-2);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .smart-decision-site .sd-review-stars-date {
     display: flex;
-    gap: 1px;
-    color: #f2b400;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 12px;
   }
+  .smart-decision-site .sd-review-stars {
+    display: inline-flex;
+    gap: 1px;
+    color: #f2b400;
+  }
+  .smart-decision-site .sd-review-date { font-size: 12px; color: var(--text-muted-2); }
   .smart-decision-site .sd-review-text {
     font-size: 14.5px;
     line-height: 1.6;
@@ -1964,12 +1977,17 @@
 
      STATUS: Google's domains (maps.app.goo.gl, google.com) are blocked by
      this environment's network egress policy, so the review links supplied
-     could not be opened to pull real names/ratings/text/photos automatically.
-     Every entry below is a clearly-marked placeholder — replace each field
-     with the verified content from the corresponding review link (listed in
-     "source_url") before publishing. Do not replace placeholders with
-     invented review content. profile_photo_url may be left null; the card
-     falls back to a clean initials avatar when no photo is provided. */
+     could not be opened directly. The first 5 reviews below were instead
+     transcribed by hand from screenshots the client sent of the real Google
+     review cards (name, rating, date, and text copied exactly as shown,
+     including Google's own "…" truncation where a review was cut off by a
+     "More" link). The remaining entries are still placeholders awaiting
+     screenshots/text for the corresponding "source_url". Do not replace
+     placeholders with invented review content. profile_photo_url is left
+     null throughout — none of the reviewer photos could be reliably
+     extracted as usable image files from screenshots, so every card falls
+     back to a clean initials avatar instead (this matches Google's own
+     default-avatar pattern for reviewers without a custom photo). */
   var GOOGLE_REVIEWS_DATA = {
     business: {
       name: 'Smart Decision Truck Repair',
@@ -1978,11 +1996,11 @@
       reviewsUrl: '#'     // paste the business's main Google "reviews" listing URL here
     },
     reviews: [
-      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/DzrWNvrRwJ4QJRLF6' },
-      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/o9eRzzZmfkwcMeGD7' },
-      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/Bav2sq13wmzDsYza6' },
-      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/KQHJMj9DY1JQXXSa8' },
-      { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/9aiyesQerTnfAu5J9' },
+      { author_name: 'Jizel Alexis', author_meta: '7 reviews · 6 photos', rating: 5, relative_time_description: '2 years ago', text: 'This company was a God sent and a blessing. They responded to my call on a Saturday and came out where we were in College Park in under an hour to do a forced regen on my diesel box truck!. While working on my truck we were educated on how …', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/DzrWNvrRwJ4QJRLF6' },
+      { author_name: 'P. Bracho', author_meta: 'Local Guide · 67 reviews', rating: 5, relative_time_description: 'a year ago', text: 'Excellent service, Adam and all Smart Decision team are great and helpful, In my case was a faulty dryer and everything happened 2 miles from the receiver, they did almost the impossible so I can make my delivery. Then repair the truck in the shop. Reasonable rates and fantastic job', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/o9eRzzZmfkwcMeGD7' },
+      { author_name: 'Jacson Hernandez', author_meta: '10 reviews · 1 photo', rating: 5, relative_time_description: 'a year ago', text: 'As a truck driver unfortunately I have to visit many truck repair shops but I have to say that by far my experience at Smart Decision truck repair has exceeded all my expectations from a friendly customer service to a top of a notch quality …', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/Bav2sq13wmzDsYza6' },
+      { author_name: 'Ernest Boyer', author_meta: '1 review · 1 photo', rating: 5, relative_time_description: '6 months ago', text: 'The service is really good and their prices are very reasonable. people here are also very welcoming, I will definitely return.', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/KQHJMj9DY1JQXXSa8' },
+      { author_name: 'Tony Holloway', author_meta: '7 reviews · 6 photos', rating: 5, relative_time_description: 'Edited 4 months ago', text: 'They was way faster and real good for the price', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/9aiyesQerTnfAu5J9' },
       { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/2LFS6ZBVtYVuW1jR7' },
       { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/kWGc9M7offmaiEHd6' },
       { author_name: '[CLIENT TO PROVIDE]', rating: 5, relative_time_description: '[CLIENT TO PROVIDE DATE]', text: '[PASTE VERIFIED GOOGLE REVIEW TEXT]', profile_photo_url: null, source_url: 'https://maps.app.goo.gl/5tyAKJ1YVL1G1FDe8' },
@@ -2145,11 +2163,14 @@
               avatarHTML(review) +
               '<div class="sd-review-who-text">' +
                 '<div class="sd-review-name">' + review.author_name + '</div>' +
-                '<div class="sd-review-date">' + review.relative_time_description + '</div>' +
+                (review.author_meta ? '<div class="sd-review-meta">' + review.author_meta + '</div>' : '') +
               '</div>' +
             '</div>' +
           '</div>' +
-          '<div class="sd-review-stars" aria-hidden="true">' + starsHTML(review.rating, 15) + '</div>' +
+          '<div class="sd-review-stars-date">' +
+            '<span class="sd-review-stars" aria-hidden="true">' + starsHTML(review.rating, 15) + '</span>' +
+            '<span class="sd-review-date">' + review.relative_time_description + '</span>' +
+          '</div>' +
           '<p class="sd-review-text">' + safeText + '</p>' +
           '<button type="button" class="sd-review-readmore" hidden>Read more</button>' +
           '<div class="sd-review-source">' +
