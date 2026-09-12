@@ -7308,31 +7308,43 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
     return {
       apply: function (camera, progress) {
         var t = progress < 0 ? 0 : progress > 1 ? 1 : progress;
-        camera.position.copy(sampleAt(positions, t));
-        camera.lookAt(sampleAt(targets, t));
+        var pos = sampleAt(positions, t);
+        var tgt = sampleAt(targets, t);
+        /* A near-straight-up/-down shot (view direction ~parallel to world
+           up) leaves lookAt()'s roll undefined, which otherwise shows up as
+           the truck appearing rotated/diagonal instead of level. Swap to
+           the truck's own "right" axis as camera.up for those shots so the
+           truck's length still reads horizontally; use world up otherwise
+           for a normal level horizon. */
+        var viewDir = new T.Vector3().subVectors(tgt, pos).normalize();
+        camera.up.copy(Math.abs(viewDir.y) > 0.9 ? right : new T.Vector3(0, 1, 0));
+        camera.position.copy(pos);
+        camera.lookAt(tgt);
       }
     };
   }
 
   /* Same six keyframes for both trucks: [forward, right, up] fractions.
      0 Overview (wide hero), 1 Brakes (front wheel), 2 Electrical (frame
-     rail behind the cab), 3 Engine (hood/grille), 4 Transmission &
-     Drivetrain (mid-frame), 5 Preventive Maintenance (wide hero again). */
+     rail behind the cab), 3 Engine (dramatic underside shot looking up at
+     the front axle/steering, where the engine sits just above), 4
+     Transmission & Drivetrain (straight bottom-up shot along the frame
+     rails/driveshaft), 5 Preventive Maintenance (wide hero again). */
   var TRUCK_STAGE_STOPS = [0.07, 0.22, 0.38, 0.54, 0.71, 0.90];
   var TRUCK_STAGE_POSITIONS = [
     [-0.55, 0.85, 0.55],
     [0.25, 0.35, 0.18],
     [-0.05, 0.45, 0.22],
-    [0.40, 0.30, 0.16],
-    [-0.30, 0.40, 0.20],
+    [0.05, 0.10, -1.10],
+    [0, 0, -1.80],
     [-0.45, 0.70, 0.46]
   ];
   var TRUCK_STAGE_TARGETS = [
     [0, 0, 0.05],
     [0.42, 0.12, -0.04],
     [0.10, 0.02, -0.06],
-    [0.55, 0.05, 0.02],
-    [-0.15, -0.02, -0.05],
+    [0.40, 0, 0.15],
+    [0, 0, 0],
     [0, 0, 0.08]
   ];
   function buildProceduralTruckScene(canvas) {
@@ -7803,6 +7815,13 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
     var rim = new T.DirectionalLight(0xff5b46, 0.4);
     scene.add(rim);
     scene.add(rim.target);
+    /* Weak upward fill so underside/undercarriage shots (Engine,
+       Transmission & Drivetrain) aren't pitch black -- the hemisphere
+       light's ground color is kept near-black for the normal above shots,
+       which otherwise leaves anything facing down essentially unlit. */
+    var underFill = new T.DirectionalLight(0xaab4c0, 0.55);
+    scene.add(underFill);
+    scene.add(underFill.target);
     (function addEnvironment() {
       var c = document.createElement('canvas');
       c.width = 16; c.height = 128;
@@ -7993,6 +8012,8 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
       fill.target.position.copy(center);
       rim.position.set(center.x - maxDim * 0.3, center.y + maxDim * 0.25, center.z + maxDim * 0.65);
       rim.target.position.copy(center);
+      underFill.position.set(center.x, bbox.min.y - maxDim * 0.3, center.z);
+      underFill.target.position.copy(center);
 
       camera.near = maxDim / 200;
       camera.far = maxDim * 8;
