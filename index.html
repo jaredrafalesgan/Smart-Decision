@@ -8045,9 +8045,15 @@ window.__TRUCK_GLB_BASE64 = "Z2xURgIAAAAY2IQA/PoLAEpTT057ImFzc2V0Ijp7ImdlbmVyYXR
 
   function buildTruckScene(canvas) {
     if (!window.THREE) return null;
-    var isNarrow = window.innerWidth < 768;
+    /* The real GLB model now renders on every device, phones included --
+       it's already fully embedded in this file regardless of viewport, so
+       there's no bandwidth reason to hold it back on mobile, only a
+       rendering-performance one. Reduced-motion is the one case that still
+       always gets the lightweight procedural truck: it's shown as a single
+       static frame with no ongoing render loop, and matching the intent of
+       prefers-reduced-motion means keeping that snapshot cheap too. */
     var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (isNarrow || prefersReducedMotion) return buildProceduralTruckScene(canvas);
+    if (prefersReducedMotion) return buildProceduralTruckScene(canvas);
     var glbScene = buildGLBTruckScene(canvas);
     return glbScene || buildProceduralTruckScene(canvas);
   }
