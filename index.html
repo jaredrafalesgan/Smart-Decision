@@ -1490,6 +1490,13 @@
     .smart-decision-site .sd-footer-grid { grid-template-columns: 1fr 1fr; }
     .smart-decision-site .sd-sticky-cta { display: grid; }
     .smart-decision-site .sd-section { padding: 72px 0; }
+    /* Reserve space for the fixed sticky CTA bar on the footer itself
+       (not the page wrapper) so the footer's own dark background fills
+       it -- padding on the wrapper left a visible light-colored gap below
+       the footer, since that background belongs to the wrapper, not any
+       actual content. Scoped to this breakpoint (not a narrower one)
+       because this is where the sticky bar itself starts showing. */
+    .smart-decision-site.sd-with-sticky .sd-footer { padding-bottom: 62px; }
   }
 
   @media (max-width: 640px) {
@@ -1512,7 +1519,6 @@
     .smart-decision-site .sd-footer-bottom { flex-direction: column; text-align: center; }
     .smart-decision-site .sd-brand { padding: 4px 0; }
     .smart-decision-site .sd-brand img { height: 46px; }
-    .smart-decision-site.sd-with-sticky { padding-bottom: 62px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
