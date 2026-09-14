@@ -201,14 +201,82 @@
   .smart-decision-site .sd-topbar-links a:hover { color: var(--red-400); }
 
   /* ---------- Nav ---------- */
-  .smart-decision-site .sd-nav { background: var(--white); box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 500; }
-  .smart-decision-site .sd-nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 24px; }
+  .smart-decision-site .sd-nav {
+    position: sticky;
+    top: 0;
+    z-index: 500;
+    background: var(--ink-950);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    box-shadow: var(--shadow-sm);
+  }
+  .smart-decision-site .sd-nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 10px 24px; gap: 20px; }
   .smart-decision-site .sd-brand { display: flex; align-items: center; flex-shrink: 0; }
   .smart-decision-site .sd-brand img { height: 66px; width: auto; }
-  .smart-decision-site .sd-nav-actions { display: flex; align-items: center; gap: 14px; }
-  .smart-decision-site .sd-nav-call { display: none; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 600; font-size: 14px; letter-spacing: 0.02em; color: var(--text-ink); }
+  .smart-decision-site .sd-nav-links { display: flex; align-items: center; gap: 34px; }
+  .smart-decision-site .sd-nav-links a {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--steel-200);
+    padding: 6px 2px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .smart-decision-site .sd-nav-links a:hover { color: var(--white); border-color: var(--red-500); }
+  .smart-decision-site .sd-nav-links a[aria-current="page"] { color: var(--white); border-color: var(--red-500); }
+  .smart-decision-site .sd-nav-cta { display: flex; align-items: center; gap: 14px; }
+  .smart-decision-site .sd-nav-call {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--white);
+    font-size: 15px;
+  }
   .smart-decision-site .sd-nav-call svg { color: var(--red-500); }
-  @media (min-width: 641px) { .smart-decision-site .sd-nav-call { display: inline-flex; } }
+  .smart-decision-site .sd-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: transparent;
+    flex-shrink: 0;
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  }
+  .smart-decision-site .sd-hamburger span { display: block; width: 20px; height: 2px; background: var(--white); transition: transform 0.2s ease, opacity 0.2s ease; }
+  .smart-decision-site .sd-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--red-500); }
+  .smart-decision-site .sd-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .smart-decision-site .sd-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--red-500); }
+
+  .smart-decision-site .sd-mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: var(--ink-900);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    box-shadow: var(--shadow-md);
+  }
+  .smart-decision-site .sd-mobile-menu.sd-open { display: flex; }
+  .smart-decision-site .sd-mobile-menu a {
+    padding: 16px 24px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: var(--steel-200);
+  }
+  .smart-decision-site .sd-mobile-menu a[aria-current="page"] { color: var(--red-400); }
+  .smart-decision-site .sd-mobile-menu .sd-mobile-call { padding: 16px 24px; display: flex; gap: 10px; background: var(--ink-950); }
+  @media (min-width: 861px) { .smart-decision-site .sd-nav-call { display: inline-flex; } }
 
   /* ---------- Hero ---------- */
   .smart-decision-site .sd-hire-hero {
@@ -335,6 +403,8 @@
     .smart-decision-site .sd-apply-wrap { grid-template-columns: 1fr; gap: 40px; }
   }
   @media (max-width: 860px) {
+    .smart-decision-site .sd-nav-links { display: none; }
+    .smart-decision-site .sd-hamburger { display: flex; }
     .smart-decision-site .sd-topbar-inner { align-items: flex-start; padding: 12px 20px; gap: 10px; }
     .smart-decision-site .sd-topbar-msg { align-items: flex-start; flex: 1 1 auto; min-width: 0; font-size: 14px; font-weight: 800; text-transform: uppercase; line-height: 1.3; }
     .smart-decision-site .sd-topbar-msg .sd-dot { margin-top: 6px; }
@@ -377,15 +447,41 @@
   <header>
     <nav class="sd-nav" aria-label="Primary">
       <div class="sd-container sd-nav-inner">
-        <a href="/" class="sd-brand" aria-label="Smart Decision Truck Repair home">
+        <a href="index.html#sd-hero" class="sd-brand" aria-label="Smart Decision Truck Repair home">
           <img id="sdLogoNav" alt="Smart Decision Truck Repair logo" width="200" height="165" loading="eager">
         </a>
-        <div class="sd-nav-actions">
+
+        <ul class="sd-nav-links">
+          <li><a href="index.html#sd-services">Services</a></li>
+          <li><a href="index.html#sd-pricing">Pricing</a></li>
+          <li><a href="index.html#sd-reviews">Reviews</a></li>
+          <li><a href="index.html#sd-locations">Locations</a></li>
+          <li><a href="index.html#sd-faq">FAQ</a></li>
+          <li><a href="careers.html" aria-current="page">Careers</a></li>
+        </ul>
+
+        <div class="sd-nav-cta">
           <a href="tel:4042282371" class="sd-nav-call">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             (404) 228-2371
           </a>
-          <a href="#apply" class="sd-btn sd-btn-primary sd-btn-sm">Apply Now</a>
+          <a href="index.html#sd-request" class="sd-btn sd-btn-primary sd-btn-sm">Request Service</a>
+          <button class="sd-hamburger" id="sdHamburger" aria-expanded="false" aria-controls="sdMobileMenu" aria-label="Toggle navigation menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sd-mobile-menu" id="sdMobileMenu">
+        <a href="index.html#sd-services">Services</a>
+        <a href="index.html#sd-pricing">Pricing</a>
+        <a href="index.html#sd-reviews">Reviews</a>
+        <a href="index.html#sd-locations">Locations</a>
+        <a href="index.html#sd-faq">FAQ</a>
+        <a href="careers.html" aria-current="page">Careers</a>
+        <a href="index.html#sd-request">Request Service</a>
+        <div class="sd-mobile-call">
+          <a href="tel:4042282371" class="sd-btn sd-btn-primary sd-btn-block sd-btn-sm">Call (404) 228-2371</a>
         </div>
       </div>
     </nav>
@@ -558,7 +654,7 @@
     <div class="sd-container">
       <div class="sd-footer-grid">
         <div class="sd-footer-brand">
-          <a href="/" aria-label="Smart Decision Truck Repair home">
+          <a href="index.html#sd-hero" aria-label="Smart Decision Truck Repair home">
             <img id="sdLogoFooter" alt="Smart Decision Truck Repair logo" width="180" height="149" loading="lazy">
           </a>
           <p>Mobile truck repair, emergency roadside assistance, and fleet maintenance serving Atlanta and surrounding areas.</p>
@@ -607,6 +703,37 @@
 
   var yearEl = document.getElementById('sdYear');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  /* Mobile hamburger menu */
+  var hamburger = document.getElementById('sdHamburger');
+  var mobileMenu = document.getElementById('sdMobileMenu');
+  if (hamburger && mobileMenu) {
+    hamburger.addEventListener('click', function () {
+      var isOpen = mobileMenu.classList.toggle('sd-open');
+      hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    mobileMenu.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        mobileMenu.classList.remove('sd-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  /* Smooth scroll for in-page anchor links, accounting for sticky nav height */
+  var navEl = document.querySelector('.sd-nav');
+  document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      var targetId = link.getAttribute('href');
+      if (!targetId || targetId === '#') return;
+      var target = document.querySelector(targetId);
+      if (!target) return;
+      e.preventDefault();
+      var navHeight = navEl ? navEl.offsetHeight : 0;
+      var y = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 12;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    });
+  });
 
   /* Mobile sticky "Call Now" bar: show once scrolled past the hero */
   var stickyCta = document.getElementById('sdStickyCta');
