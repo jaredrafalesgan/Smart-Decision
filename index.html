@@ -243,6 +243,8 @@
     color: var(--white);
     letter-spacing: 0.01em;
   }
+  .smart-decision-site .sd-topbar-msg-short { display: none; }
+  .smart-decision-site .sd-topbar-call-label { display: none; }
   .smart-decision-site .sd-topbar-msg .sd-dot {
     width: 7px; height: 7px; border-radius: 50%;
     background: var(--red-500);
@@ -1436,8 +1438,32 @@
   @media (max-width: 860px) {
     .smart-decision-site .sd-nav-links { display: none; }
     .smart-decision-site .sd-hamburger { display: flex; }
-    .smart-decision-site .sd-topbar-inner { justify-content: center; text-align: center; }
-    .smart-decision-site .sd-topbar-msg { width: 100%; justify-content: center; }
+    .smart-decision-site .sd-topbar-inner { align-items: flex-start; padding: 12px 20px; gap: 10px; }
+    .smart-decision-site .sd-topbar-msg {
+      align-items: flex-start;
+      flex: 1 1 auto;
+      min-width: 0;
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+    .smart-decision-site .sd-topbar-msg .sd-dot { margin-top: 6px; }
+    .smart-decision-site .sd-topbar-msg-full { display: none; }
+    .smart-decision-site .sd-topbar-msg-short { display: inline; }
+    .smart-decision-site .sd-topbar-call-label { display: inline; }
+    .smart-decision-site .sd-topbar-links {
+      flex: 0 0 auto;
+      justify-content: flex-end;
+      text-align: right;
+    }
+    .smart-decision-site .sd-topbar-links a {
+      font-size: 14px;
+      font-weight: 800;
+      white-space: normal;
+      text-align: right;
+      line-height: 1.3;
+    }
     .smart-decision-site .sd-cta-band-inner { justify-content: center; text-align: center; }
     .smart-decision-site .sd-locations-grid { grid-template-columns: 1fr; }
     .smart-decision-site .sd-locations-head { flex-direction: column; align-items: flex-start; gap: 16px; }
@@ -1461,6 +1487,8 @@
     .smart-decision-site .sd-reviews-summary-actions { order: 4; justify-content: space-between; }
     .smart-decision-site .sd-stats { grid-template-columns: repeat(2, 1fr); }
     .smart-decision-site .sd-services-grid { grid-template-columns: 1fr; }
+    .smart-decision-site .sd-services-more { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .smart-decision-site .sd-chip { width: 100%; justify-content: center; text-align: center; white-space: normal; }
     .smart-decision-site .sd-pricing-grid { grid-template-columns: 1fr; }
     .smart-decision-site .sd-reviews-grid { grid-template-columns: 1fr; }
     .smart-decision-site .sd-footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
@@ -1470,7 +1498,6 @@
     .smart-decision-site .sd-cta-band-actions { width: 100%; }
     .smart-decision-site .sd-cta-band-actions .sd-btn { flex: 1; }
     .smart-decision-site .sd-hero-trust { gap: 16px; }
-    .smart-decision-site .sd-topbar-links { justify-content: center; gap: 14px; }
     .smart-decision-site .sd-footer-bottom { flex-direction: column; text-align: center; }
     .smart-decision-site .sd-brand { padding: 4px 0; }
     .smart-decision-site .sd-brand img { height: 46px; }
@@ -1700,9 +1727,13 @@
   <!-- ============ TOP EMERGENCY BAR ============ -->
   <div class="sd-topbar">
     <div class="sd-container sd-topbar-inner">
-      <div class="sd-topbar-msg"><span class="sd-dot" aria-hidden="true"></span> 24/7 Emergency Mobile Truck Repair — Atlanta &amp; Surrounding Areas</div>
+      <div class="sd-topbar-msg">
+        <span class="sd-dot" aria-hidden="true"></span>
+        <span class="sd-topbar-msg-full">24/7 Emergency Mobile Truck Repair — Atlanta &amp; Surrounding Areas</span>
+        <span class="sd-topbar-msg-short">24/7 Mobile Emergency Service</span>
+      </div>
       <div class="sd-topbar-links">
-        <a href="tel:4042282371" aria-label="Call (404) 228-2371">(404) 228-2371</a>
+        <a href="tel:4042282371" aria-label="Call (404) 228-2371"><span class="sd-topbar-call-label">Call </span>(404) 228-2371</a>
       </div>
     </div>
   </div>
