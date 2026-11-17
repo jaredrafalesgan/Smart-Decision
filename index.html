@@ -498,6 +498,104 @@
   }
   .smart-decision-site .sd-hero-checks svg { flex-shrink: 0; color: var(--red-500); }
 
+  /* ---------- Trust marquee + credential badges ---------- */
+  .smart-decision-site .sd-trustbar {
+    background: var(--ink-950);
+    overflow: hidden;
+    padding: 14px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .smart-decision-site .sd-trustbar-track {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    white-space: nowrap;
+    width: max-content;
+    animation: sd-trustbar-scroll 30s linear infinite;
+  }
+  @keyframes sd-trustbar-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .smart-decision-site .sd-trustbar-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--steel-200);
+  }
+  .smart-decision-site .sd-trustbar-item strong { color: var(--white); }
+  .smart-decision-site .sd-trustbar-item svg { color: var(--red-500); flex-shrink: 0; }
+  .smart-decision-site a.sd-trustbar-item:hover { color: var(--white); }
+  .smart-decision-site .sd-trustbar-dot { color: var(--red-500); font-size: 10px; }
+
+  .smart-decision-site .sd-trust-badges-wrap { background: var(--paper); padding: 44px 0; }
+  .smart-decision-site .sd-trust-badges {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 36px 44px;
+  }
+  .smart-decision-site .sd-trust-seal {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 140px;
+    flex-shrink: 0;
+  }
+  .smart-decision-site .sd-trust-seal-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--ink-950);
+    border: 3px solid var(--white);
+    box-shadow: 0 0 0 2px var(--steel-300), 0 0 0 6px var(--white), 0 0 0 8px var(--steel-200);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .smart-decision-site .sd-trust-seal-top,
+  .smart-decision-site .sd-trust-seal-bottom {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--steel-300);
+    padding: 0 16px;
+  }
+  .smart-decision-site .sd-trust-seal-ribbon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-7deg);
+    background: var(--red-600);
+    color: var(--white);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14.5px;
+    letter-spacing: 0.01em;
+    padding: 7px 16px;
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+  }
+  .smart-decision-site .sd-trust-rating { display: flex; align-items: center; gap: 12px; }
+  .smart-decision-site .sd-trust-rating-stars { display: flex; gap: 1px; }
+  .smart-decision-site .sd-trust-rating-label { display: block; font-family: var(--font-display); font-weight: 600; color: var(--text-ink); font-size: 14.5px; margin-top: 3px; }
+  .smart-decision-site .sd-trust-icon-badge { display: flex; align-items: center; gap: 12px; }
+  .smart-decision-site .sd-trust-icon-badge svg { color: var(--red-500); flex-shrink: 0; }
+  .smart-decision-site .sd-trust-icon-badge strong { display: block; font-family: var(--font-display); font-size: 21px; color: var(--text-ink); line-height: 1.1; }
+  .smart-decision-site .sd-trust-icon-badge span { display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; font-weight: 600; }
+
   /* ---------- Primary Service Request Band ---------- */
   .smart-decision-site .sd-cta-band {
     background: var(--red-600);
@@ -1660,6 +1758,10 @@
     .smart-decision-site .sd-footer-bottom { flex-direction: column; text-align: center; }
     .smart-decision-site .sd-brand { padding: 4px 0; }
     .smart-decision-site .sd-brand img { height: 46px; }
+    .smart-decision-site .sd-trustbar-item { font-size: 12.5px; gap: 6px; }
+    .smart-decision-site .sd-trustbar-track { gap: 18px; }
+    .smart-decision-site .sd-trust-badges-wrap { padding: 36px 0; }
+    .smart-decision-site .sd-trust-seal-circle { width: 100px; height: 100px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1998,6 +2100,82 @@
         </div>
       </div>
     </section>
+
+    <!-- ============ TRUST MARQUEE ============ -->
+    <div class="sd-trustbar">
+      <div class="sd-trustbar-track" aria-hidden="true">
+        <span class="sd-trustbar-item"><strong>20+ Years</strong>&nbsp;Of Experience</span>
+        <span class="sd-trustbar-dot">&bull;</span>
+        <span class="sd-trustbar-item">Atlanta &amp; Surrounding Areas</span>
+        <span class="sd-trustbar-dot">&bull;</span>
+        <span class="sd-trustbar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Call (404) 228-2371</span>
+        <span class="sd-trustbar-dot">&bull;</span>
+        <span class="sd-trustbar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 24/7 Emergency Response</span>
+        <span class="sd-trustbar-dot">&bull;</span>
+        <span class="sd-trustbar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="13" height="8" rx="1"/><path d="M15 12h3l3 3v2h-3"/><circle cx="6.5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg> Mobile &amp; In-Shop Service</span>
+        <span class="sd-trustbar-dot">&bull;</span>
+        <span class="sd-trustbar-item"><strong>20+ Years</strong>&nbsp;Of Experience</span>
+        <span class="sd-trustbar-dot">&bull;</span>
+        <span class="sd-trustbar-item">Atlanta &amp; Surrounding Areas</span>
+        <span class="sd-trustbar-dot">&bull;</span>
+        <span class="sd-trustbar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Call (404) 228-2371</span>
+        <span class="sd-trustbar-dot">&bull;</span>
+        <span class="sd-trustbar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 24/7 Emergency Response</span>
+        <span class="sd-trustbar-dot">&bull;</span>
+        <span class="sd-trustbar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="13" height="8" rx="1"/><path d="M15 12h3l3 3v2h-3"/><circle cx="6.5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg> Mobile &amp; In-Shop Service</span>
+        <span class="sd-trustbar-dot">&bull;</span>
+      </div>
+    </div>
+
+    <!-- ============ CREDENTIAL BADGES ============ -->
+    <div class="sd-trust-badges-wrap">
+      <div class="sd-container sd-trust-badges">
+        <div class="sd-trust-seal">
+          <div class="sd-trust-seal-circle">
+            <span class="sd-trust-seal-top">Industry</span>
+            <span class="sd-trust-seal-bottom">Experience</span>
+          </div>
+          <div class="sd-trust-seal-ribbon">20+ Years</div>
+        </div>
+
+        <div class="sd-trust-rating">
+          <svg class="sd-google-g" width="30" height="30" viewBox="0 0 48 48" aria-hidden="true">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.9-2.26 5.36-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          </svg>
+          <div>
+            <span class="sd-trust-rating-stars" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" style="fill:#f2b400;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg width="15" height="15" viewBox="0 0 24 24" style="fill:#f2b400;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg width="15" height="15" viewBox="0 0 24 24" style="fill:#f2b400;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg width="15" height="15" viewBox="0 0 24 24" style="fill:#f2b400;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><span style="position:relative;display:inline-block;width:15px;height:15px;"><svg width="15" height="15" viewBox="0 0 24 24" style="position:absolute;top:0;left:0;fill:#dadce0;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><span style="position:absolute;top:0;left:0;width:80%;height:100%;overflow:hidden;"><svg width="15" height="15" viewBox="0 0 24 24" style="fill:#f2b400;display:block;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></span></span></span>
+            <span class="sd-trust-rating-label">4.8 &middot; 244 Google Reviews</span>
+          </div>
+        </div>
+
+        <div class="sd-trust-seal">
+          <div class="sd-trust-seal-circle">
+            <span class="sd-trust-seal-top">Unlimited</span>
+            <span class="sd-trust-seal-bottom">Mileage</span>
+          </div>
+          <div class="sd-trust-seal-ribbon">12 Mo. Warranty</div>
+        </div>
+
+        <div class="sd-trust-icon-badge">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <div>
+            <strong>24/7</strong>
+            <span>Emergency Roadside</span>
+          </div>
+        </div>
+
+        <div class="sd-trust-icon-badge">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="13" height="8" rx="1"/><path d="M15 12h3l3 3v2h-3"/><circle cx="6.5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
+          <div>
+            <strong>85%</strong>
+            <span>Mobile-Eligible Repairs</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- ============ PRIMARY SERVICE REQUEST CTA BAND ============ -->
     <div class="sd-cta-band">
