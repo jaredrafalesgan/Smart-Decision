@@ -1063,6 +1063,23 @@
     color: var(--text-muted-2);
   }
 
+  /* ---------- Client video spotlight ---------- */
+  .smart-decision-site .sd-client-video-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 28px;
+  }
+  .smart-decision-site .sd-client-video-card {
+    background: var(--white);
+    border: 1px solid var(--steel-200);
+    box-shadow: var(--shadow-sm);
+    padding: 12px;
+    max-width: 400px;
+    width: 100%;
+  }
+  .smart-decision-site .sd-client-video-card .instagram-media { margin: 0 !important; width: 100% !important; }
+
   /* ---------- Process ---------- */
   .smart-decision-site .sd-process-grid {
     display: grid;
@@ -2179,6 +2196,23 @@
         <p class="sd-reviews-footer">Reviews are pulled from this business's Google profile and shown here unedited. Hover or focus the reviews to pause scrolling and read at your own pace.</p>
       </div>
     </section>
+
+    <!-- ============ CLIENT VIDEO SPOTLIGHT ============ -->
+    <section class="sd-section sd-section-dim" id="sd-client-videos">
+      <div class="sd-container">
+        <div class="sd-section-head">
+          <span class="sd-eyebrow">Client Spotlight</span>
+          <h2>Hear It From Our Customers</h2>
+          <p>Real stories from real fleets and drivers we've helped get back on the road.</p>
+        </div>
+        <div class="sd-client-video-grid">
+          <div class="sd-client-video-card">
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DX-xUL3gQWz/" data-instgrm-version="14"></blockquote>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script async src="//www.instagram.com/embed.js"></script>
 
     <!-- ============ PROCESS ============ -->
     <section class="sd-section sd-section-dark" aria-label="How it works">
