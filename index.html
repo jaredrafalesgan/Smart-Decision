@@ -58,6 +58,12 @@
     --red-400: #ea2f3d;
     --red-300: #f4626d;
 
+    /* Used only for the Roadside Assistance entry points below, to make
+       the emergency dispatch link/button visually distinct from the rest
+       of this (red-accented) nav. */
+    --orange-500: #ea580c;
+    --orange-400: #f97316;
+
     --shadow-sm: 0 1px 3px rgba(10,10,12,0.10), 0 1px 2px rgba(10,10,12,0.12);
     --shadow-md: 0 10px 24px rgba(10,10,12,0.16);
     --shadow-lg: 0 24px 56px rgba(10,10,12,0.30);
@@ -200,6 +206,8 @@
     box-shadow: var(--shadow-md);
   }
   .smart-decision-site .sd-btn-primary:hover { background: var(--red-500); transform: translateY(-1px); }
+  .smart-decision-site .sd-btn-emergency { background: var(--orange-500); color: var(--white); box-shadow: var(--shadow-md); }
+  .smart-decision-site .sd-btn-emergency:hover { background: var(--orange-400); transform: translateY(-1px); }
   .smart-decision-site .sd-btn-dark {
     background: var(--ink-950);
     color: var(--white);
@@ -295,7 +303,7 @@
   .smart-decision-site .sd-nav-links {
     display: flex;
     align-items: center;
-    gap: 34px;
+    gap: 26px;
   }
   .smart-decision-site .sd-nav-links a {
     font-family: var(--font-display);
@@ -309,10 +317,13 @@
     transition: color 0.15s, border-color 0.15s;
   }
   .smart-decision-site .sd-nav-links a:hover { color: var(--white); border-color: var(--red-500); }
+  .smart-decision-site .sd-nav-links a.sd-nav-link-emergency { color: var(--orange-400); }
+  .smart-decision-site .sd-nav-links a.sd-nav-link-emergency:hover { color: var(--orange-400); border-color: var(--orange-500); }
+  .smart-decision-site .sd-mobile-menu a.sd-nav-link-emergency { color: var(--orange-400); }
   .smart-decision-site .sd-nav-cta {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
   }
   .smart-decision-site .sd-nav-call {
     display: none;
@@ -323,6 +334,7 @@
     letter-spacing: 0.03em;
     color: var(--white);
     font-size: 15px;
+    white-space: nowrap;
   }
   .smart-decision-site .sd-nav-call svg { color: var(--red-500); }
   .smart-decision-site .sd-hamburger {
@@ -1687,8 +1699,24 @@
   .smart-decision-site .sd-sticky-cta .sd-sticky-request { background: var(--red-600); color: var(--white); }
 
   /* ================= RESPONSIVE ================= */
-  @media (min-width: 861px) {
+  @media (min-width: 1220px) {
     .smart-decision-site .sd-nav-call { display: inline-flex; }
+  }
+  /* The Roadside Help nav button (added alongside Request Service) needs
+     more breathing room than the original 6-item nav did, so the nav
+     switches to the hamburger menu a bit earlier than the rest of the
+     mobile layout (which still switches at 860px below). Below that same
+     width, the extra button is hidden from the always-visible nav-cta row
+     (it would not fit next to the logo + Request Service + hamburger) --
+     it stays reachable via the hamburger dropdown, which already repeats
+     it as a full-width button. */
+  .smart-decision-site .sd-nav-cta-emergency { display: none; }
+  @media (min-width: 1081px) {
+    .smart-decision-site .sd-nav-cta-emergency { display: inline-flex; }
+  }
+  @media (max-width: 1080px) {
+    .smart-decision-site .sd-nav-links { display: none; }
+    .smart-decision-site .sd-hamburger { display: flex; }
   }
 
   @media (max-width: 1024px) {
@@ -2030,6 +2058,7 @@
           <li><a href="#sd-locations">Locations</a></li>
           <li><a href="#sd-faq">FAQ</a></li>
           <li><a href="/careers">Careers</a></li>
+          <li><a href="/roadside-assistance" class="sd-nav-link-emergency">Roadside Help</a></li>
         </ul>
 
         <div class="sd-nav-cta">
@@ -2037,6 +2066,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             (404) 228-2371
           </a>
+          <a href="/roadside-assistance" class="sd-btn sd-btn-emergency sd-btn-sm sd-nav-cta-emergency">🆘 Roadside Help</a>
           <a href="#sd-request" class="sd-btn sd-btn-primary sd-btn-sm">Request Service</a>
           <button class="sd-hamburger" id="sdHamburger" aria-expanded="false" aria-controls="sdMobileMenu" aria-label="Toggle navigation menu">
             <span></span><span></span><span></span>
@@ -2051,9 +2081,11 @@
         <a href="#sd-locations">Locations</a>
         <a href="#sd-faq">FAQ</a>
         <a href="/careers">Careers</a>
+        <a href="/roadside-assistance" class="sd-nav-link-emergency">Roadside Help</a>
         <a href="#sd-request">Request Service</a>
         <div class="sd-mobile-call">
           <a href="tel:4042282371" class="sd-btn sd-btn-primary sd-btn-block sd-btn-sm">Call (404) 228-2371</a>
+          <a href="/roadside-assistance" class="sd-btn sd-btn-emergency sd-btn-block sd-btn-sm">🆘 Roadside Help</a>
         </div>
       </div>
     </nav>
@@ -2883,6 +2915,7 @@
             <li><a href="#sd-faq">FAQ</a></li>
             <li><a href="/careers">Careers</a></li>
             <li><a href="#sd-request">Request Service</a></li>
+            <li><a href="/roadside-assistance">Roadside Assistance</a></li>
           </ul>
         </div>
 
