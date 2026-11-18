@@ -90,17 +90,21 @@
     --red-400: #ea2f3d;
     --red-300: #f4626d;
 
-    --orange-700: #9a3412;
-    --orange-600: #c2410c;
-    --orange-500: #ea580c;
-    --orange-400: #f97316;
-    --orange-300: #fb923c;
-    --orange-200: #fed7aa;
+    /* Aliased to the site's existing red tones (not a separate orange)
+       so this page matches the rest of the (red-accented) site instead
+       of clashing with it. Names kept as-is since they're only used
+       internally within this file's own CSS rules below. */
+    --orange-700: #6b0e1a;
+    --orange-600: #b3121f;
+    --orange-500: #b3121f;
+    --orange-400: #d31627;
+    --orange-300: #f4626d;
+    --orange-200: #f4626d;
 
     --shadow-sm: 0 1px 3px rgba(10,10,12,0.10), 0 1px 2px rgba(10,10,12,0.12);
     --shadow-md: 0 10px 24px rgba(10,10,12,0.16);
     --shadow-lg: 0 24px 56px rgba(10,10,12,0.30);
-    --glow-orange: 0 0 0 1px rgba(234,88,12,0.35), 0 16px 40px rgba(234,88,12,0.22);
+    --glow-orange: 0 0 0 1px rgba(211,22,39,0.35), 0 16px 40px rgba(211,22,39,0.22);
 
     --cut: 18px;
     --cut-sm: 9px;
@@ -159,7 +163,7 @@
 
   .smart-decision-site .sd-halftone {
     position: absolute; inset: 0;
-    background-image: radial-gradient(rgba(234,88,12,0.5) 1.1px, transparent 1.3px);
+    background-image: radial-gradient(rgba(211,22,39,0.5) 1.1px, transparent 1.3px);
     background-size: 15px 15px;
     -webkit-mask-image: radial-gradient(ellipse 70% 90% at 78% 40%, #000 0%, transparent 72%);
     mask-image: radial-gradient(ellipse 70% 90% at 78% 40%, #000 0%, transparent 72%);
@@ -199,12 +203,12 @@
   .smart-decision-site .sd-topbar-call-label { display: none; }
   .smart-decision-site .sd-topbar-msg .sd-dot {
     width: 7px; height: 7px; border-radius: 50%; background: var(--orange-500);
-    box-shadow: 0 0 0 3px rgba(234,88,12,0.3); flex-shrink: 0; animation: sd-pulse 2s infinite;
+    box-shadow: 0 0 0 3px rgba(211,22,39,0.3); flex-shrink: 0; animation: sd-pulse 2s infinite;
   }
   @keyframes sd-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(234,88,12,0.55); }
-    70% { box-shadow: 0 0 0 6px rgba(234,88,12,0); }
-    100% { box-shadow: 0 0 0 0 rgba(234,88,12,0); }
+    0% { box-shadow: 0 0 0 0 rgba(211,22,39,0.55); }
+    70% { box-shadow: 0 0 0 6px rgba(211,22,39,0); }
+    100% { box-shadow: 0 0 0 0 rgba(211,22,39,0); }
   }
   .smart-decision-site .sd-topbar-links { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
   .smart-decision-site .sd-topbar-links a { display: inline-flex; align-items: center; gap: 7px; color: var(--steel-300); font-weight: 600; white-space: nowrap; }
@@ -248,7 +252,7 @@
 
   /* ---------- Hero ---------- */
   .smart-decision-site .sd-rsa-hero {
-    background: radial-gradient(ellipse 90% 70% at 85% 0%, rgba(234,88,12,0.18) 0%, transparent 55%), var(--ink-950);
+    background: radial-gradient(ellipse 90% 70% at 85% 0%, rgba(211,22,39,0.18) 0%, transparent 55%), var(--ink-950);
     color: var(--white); position: relative; overflow: hidden; padding: 80px 0 72px 0;
   }
   .smart-decision-site .sd-rsa-hero-inner { position: relative; z-index: 1; max-width: 760px; }
@@ -318,7 +322,7 @@
   .smart-decision-site .sd-wizard-nav .sd-btn { flex: 0 0 auto; }
 
   /* ---------- GPS step ---------- */
-  .smart-decision-site .sd-gps-privacy { background: rgba(234,88,12,0.08); border: 1px solid rgba(234,88,12,0.3); padding: 14px 16px; font-size: 13px; color: var(--steel-200); margin-bottom: 20px; display: flex; gap: 10px; }
+  .smart-decision-site .sd-gps-privacy { background: rgba(211,22,39,0.08); border: 1px solid rgba(211,22,39,0.3); padding: 14px 16px; font-size: 13px; color: var(--steel-200); margin-bottom: 20px; display: flex; gap: 10px; }
   .smart-decision-site .sd-gps-privacy svg { flex-shrink: 0; color: var(--orange-400); margin-top: 1px; }
   .smart-decision-site .sd-gps-btn-wrap { text-align: center; margin-bottom: 18px; }
   .smart-decision-site .sd-gps-status { text-align: center; font-size: 13.5px; font-weight: 600; margin-bottom: 18px; min-height: 20px; color: var(--steel-300); }
@@ -355,7 +359,7 @@
   .smart-decision-site .sd-zelle-qr span { font-size: 12px; color: var(--text-muted-2); font-weight: 600; }
   .smart-decision-site .sd-copy-btn { margin-top: 12px; }
   .smart-decision-site .sd-copy-btn.sd-copied { background: var(--orange-700) !important; }
-  .smart-decision-site .sd-pay-instructions { background: rgba(234,88,12,0.08); border: 1px solid rgba(234,88,12,0.3); padding: 16px; font-size: 14px; color: var(--steel-100); margin-bottom: 22px; }
+  .smart-decision-site .sd-pay-instructions { background: rgba(211,22,39,0.08); border: 1px solid rgba(211,22,39,0.3); padding: 16px; font-size: 14px; color: var(--steel-100); margin-bottom: 22px; }
   .smart-decision-site .sd-pay-instructions strong { color: var(--white); }
 
   /* ---------- Review step ---------- */

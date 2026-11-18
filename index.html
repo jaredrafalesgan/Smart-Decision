@@ -58,11 +58,11 @@
     --red-400: #ea2f3d;
     --red-300: #f4626d;
 
-    /* Used only for the Roadside Assistance entry points below, to make
-       the emergency dispatch link/button visually distinct from the rest
-       of this (red-accented) nav. */
-    --orange-500: #ea580c;
-    --orange-400: #f97316;
+    /* Aliased to the site's existing red tones (not a separate orange)
+       so the Roadside Assistance entry points below match the rest of
+       this red-accented nav instead of clashing with it. */
+    --orange-500: var(--red-600);
+    --orange-400: var(--red-500);
 
     --shadow-sm: 0 1px 3px rgba(10,10,12,0.10), 0 1px 2px rgba(10,10,12,0.12);
     --shadow-md: 0 10px 24px rgba(10,10,12,0.16);
